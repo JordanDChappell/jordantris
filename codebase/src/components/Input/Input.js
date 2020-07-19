@@ -1,5 +1,4 @@
-import "../styles/global/main.global.css";
-import styles from "../styles/modules/Input.module.css";
+import styles from "./Input.module.css";
 
 export default class Input {
   constructor(label, name) {
@@ -10,7 +9,7 @@ export default class Input {
   render() {
     return `
       <label class="${styles["label"]}" for="${this.name}">${this.label}</label>
-      <input class="${styles["input"]} global-input" type="text" id="${this.name}" name="${this.name}">
+      <input class="${styles["input"]}" type="text" id="${this.name}" name="${this.name}">
     `;
   }
 }

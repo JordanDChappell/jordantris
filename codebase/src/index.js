@@ -1,19 +1,14 @@
-import Input from "./components/Input";
-import Cruxil from "./images/cruxil.jpg";
+import GameCanvas from './components/GameCanvas/GameCanvas';
+
+import "./styles/global/main.global.css";
 
 function component() {
-  let input = new Input("Test", "test");
   const container = document.createElement("div");
-  const element = document.createElement("div");
-  element.innerHTML = input.render();
 
-  const image = document.createElement("img");
-  image.src = Cruxil;
-  image.classList.add("small-image");
+  const jordantrisGameCanvas = new GameCanvas("jordantris-canvas");
+  console.log(jordantrisGameCanvas);
   
-  container.appendChild(element);
-  container.appendChild(image);
-
+  container.appendChild(jordantrisGameCanvas.canvas);
   return container;
 }
 

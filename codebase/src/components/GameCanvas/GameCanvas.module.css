@@ -1,6 +1,4 @@
 .canvas {
-  margin-left: calc(50% - 135px);
-  margin-right: auto;
-  height: 480px;
-  width: 270px;
+  margin: auto;
+  /* border: solid 1px #000000; */
 }

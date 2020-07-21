@@ -1,7 +1,19 @@
-.global-input {
-  height: 40px;
+/* Global Elements */
+html {
+  /* height: 100%; */
 }
+body {
+  height: 100%;
+}
+
+
+/* Global Classes */
 .small-image {
   height: 48px;
   width: 48px;
+}
+.game-container {
+  width: 100%;
+  margin: auto;
+  text-align: center;
 }

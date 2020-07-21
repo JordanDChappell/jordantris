@@ -1,20 +1,18 @@
-import Input from "./components/Input";
-import Cruxil from "./images/cruxil.jpg";
+import Game from './Game';
+
+import './styles/global/main.global.css';
+
+const containerId = "game-container";
 
 function component() {
-  let input = new Input("Test", "test");
-  const container = document.createElement("div");
-  const element = document.createElement("div");
-  element.innerHTML = input.render();
-
-  const image = document.createElement("img");
-  image.src = Cruxil;
-  image.classList.add("small-image");
-  
-  container.appendChild(element);
-  container.appendChild(image);
-
+  const container = document.createElement('div');
+  container.setAttribute('id', containerId);
+  container.setAttribute('class', containerId);  
   return container;
 }
 
 document.body.appendChild(component());
+
+var game = new Game();
+game.init(document.getElementById(containerId));
+game.run();

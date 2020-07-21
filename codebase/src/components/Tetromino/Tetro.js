@@ -26,6 +26,7 @@ export default class Tetro extends Tetromino {
   }
 
   moveTo(x, y) {
+    console.log(x,y);
     this.clear();
     this.moveOrigin(x, y);
     this.draw();

@@ -8,8 +8,8 @@ export default class Tetromino {
   }
 
   moveOrigin(x, y) {
-    this.xOrigin = x;
-    this.yOrigin = y;
+    this.xOrigin = x * this.blockSize;
+    this.yOrigin = y * this.blockSize;
   }
 
   drawBlock(x, y) {

@@ -1,8 +1,5 @@
 import GameCanvas from './components/GameCanvas/GameCanvas';
-import Tetro from './components/Tetromino/Tetro';
-import Zetro from './components/Tetromino/Zetro';
-import Sqetro from './components/Tetromino/Sqetro';
-import Letro from './components/Tetromino/Letro';
+import createTetromino from './components/Tetromino/BlockFactory';
 
 export default class Game {
   constructor() {
@@ -16,18 +13,38 @@ export default class Game {
   }
 
   run() {
-    var tblock = new Tetro(this.gameCanvas.context, this.tetrominoSize);
-    tblock.draw(this.gameCanvas.padding, this.tetrominoSize);
+    let blocks = [
+      { shape: 't', position: [this.gameCanvas.padding, this.tetrominoSize] },
+      {
+        shape: 'z',
+        position: [
+          this.gameCanvas.padding + this.tetrominoSize * 4,
+          this.tetrominoSize
+        ]
+      },
+      {
+        shape: 'square',
+        position: [this.gameCanvas.padding, this.tetrominoSize * 4]
+      },
+      {
+        shape: 'l',
+        position: [
+          this.gameCanvas.padding + this.tetrominoSize * 4,
+          this.tetrominoSize * 4
+        ]
+      }
+    ];
 
-    var zblock = new Zetro(this.gameCanvas.context, this.tetrominoSize);
-    zblock.draw(this.gameCanvas.padding + this.tetrominoSize * 4, this.tetrominoSize);
-
-    var sqblock = new Sqetro(this.gameCanvas.context, this.tetrominoSize);
-    sqblock.draw(this.gameCanvas.padding, this.tetrominoSize * 4);
-
-    var lblock = new Letro(this.gameCanvas.context, this.tetrominoSize);
-    lblock.draw(this.gameCanvas.padding + this.tetrominoSize * 4, this.tetrominoSize * 4);
+    for (let i = 0; i < blocks.length; i++) {
+      console.log(blocks[i]);
+      var tetromino = createTetromino(
+        blocks[i].shape,
+        this.gameCanvas.context,
+        this.tetrominoSize
+      );
+      if (tetromino) {
+        tetromino.draw(blocks[i].position[0], blocks[i].position[1]);
+      }
+    }
   }
 }
-
-

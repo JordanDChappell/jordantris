@@ -8,38 +8,38 @@ export default class Game {
   }
 
   init(container) {
-    this.gameCanvas = new GameCanvas('jordantris-canvas');
-    container.appendChild(this.gameCanvas.canvas);
+    this.gameCanvas = new GameCanvas('jordantris-canvas', this.tetrominoSize);
+    container.appendChild(this.gameCanvas.backgroundLayer);
+    container.appendChild(this.gameCanvas.foregroundLayer);
   }
 
   run() {
     let blocks = [
-      { shape: 't', position: [this.gameCanvas.padding, this.tetrominoSize] },
+      { shape: 't', position: [0, this.tetrominoSize] },
       {
         shape: 'z',
         position: [
-          this.gameCanvas.padding + this.tetrominoSize * 4,
+          this.tetrominoSize * 4,
           this.tetrominoSize
         ]
       },
       {
         shape: 'square',
-        position: [this.gameCanvas.padding, this.tetrominoSize * 4]
+        position: [0, this.tetrominoSize * 4]
       },
       {
         shape: 'l',
         position: [
-          this.gameCanvas.padding + this.tetrominoSize * 4,
+          this.tetrominoSize * 4,
           this.tetrominoSize * 4
         ]
       }
     ];
 
     for (let i = 0; i < blocks.length; i++) {
-      console.log(blocks[i]);
       var tetromino = createTetromino(
         blocks[i].shape,
-        this.gameCanvas.context,
+        this.gameCanvas.foregroundLayer.getContext('2d'),
         this.tetrominoSize
       );
       if (tetromino) {

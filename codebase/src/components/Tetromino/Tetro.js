@@ -24,4 +24,10 @@ export default class Tetro extends Tetromino {
       this.yOrigin + this.blockSize
     );
   }
+
+  moveTo(x, y) {
+    this.clear();
+    this.moveOrigin(x, y);
+    this.draw();
+  }
 }

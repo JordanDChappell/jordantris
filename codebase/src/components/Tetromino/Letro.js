@@ -30,4 +30,10 @@ export default class Letro extends Tetromino {
       this.yOrigin + this.blockSize
     );
   }
+
+  moveTo(x, y) {
+    this.clear();
+    this.moveOrigin(x, y);
+    this.draw();
+  }
 }

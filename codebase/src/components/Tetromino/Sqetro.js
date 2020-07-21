@@ -5,10 +5,23 @@ export default class Sqetro extends Tetromino {
     super(context, blockSize, 'red');
   }
 
-  draw(x, y) {
-    this.drawBlock(x, y);
-    this.drawBlock(x + this.blockSize, y);
-    this.drawBlock(x, y + this.blockSize);
-    this.drawBlock(x + this.blockSize, y + this.blockSize);
+  draw() {
+    this.drawBlock(this.xOrigin, this.yOrigin);
+    this.drawBlock(this.xOrigin + this.blockSize, this.yOrigin);
+    this.drawBlock(this.xOrigin, this.yOrigin + this.blockSize);
+    this.drawBlock(
+      this.xOrigin + this.blockSize,
+      this.yOrigin + this.blockSize
+    );
+  }
+
+  clear() {
+    this.clearBlock(this.xOrigin, this.yOrigin);
+    this.clearBlock(this.xOrigin + this.blockSize, this.yOrigin);
+    this.clearBlock(this.xOrigin, this.yOrigin + this.blockSize);
+    this.clearBlock(
+      this.xOrigin + this.blockSize,
+      this.yOrigin + this.blockSize
+    );
   }
 }

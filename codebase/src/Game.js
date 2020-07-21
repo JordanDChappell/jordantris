@@ -15,13 +15,10 @@ export default class Game {
 
   run() {
     let blocks = [
-      { shape: 't', position: [0, this.tetrominoSize] },
+      { shape: 't', position: [0, 0] },
       {
         shape: 'z',
-        position: [
-          this.tetrominoSize * 4,
-          this.tetrominoSize
-        ]
+        position: [this.tetrominoSize * 4, 0]
       },
       {
         shape: 'square',
@@ -29,10 +26,7 @@ export default class Game {
       },
       {
         shape: 'l',
-        position: [
-          this.tetrominoSize * 4,
-          this.tetrominoSize * 4
-        ]
+        position: [this.tetrominoSize * 4, this.tetrominoSize * 4]
       }
     ];
 
@@ -43,7 +37,16 @@ export default class Game {
         this.tetrominoSize
       );
       if (tetromino) {
-        tetromino.draw(blocks[i].position[0], blocks[i].position[1]);
+        tetromino.moveOrigin(blocks[i].position[0], blocks[i].position[1]);
+        tetromino.draw();
+
+        document.onkeydown = (event) => {
+          // on 'c' key down event
+          if (event.keyCode === 67) {
+            console.log(tetromino);
+            tetromino.clear();
+          }
+        };
       }
     }
   }

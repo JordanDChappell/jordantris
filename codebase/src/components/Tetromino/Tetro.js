@@ -5,10 +5,23 @@ export default class Tetro extends Tetromino {
     super(context, blockSize, 'blue');
   }
 
-  draw(x, y) {
-    this.drawBlock(x, y);
-    this.drawBlock(x + this.blockSize, y);
-    this.drawBlock(x + (this.blockSize * 2), y);
-    this.drawBlock(x + this.blockSize, y + this.blockSize);
+  draw() {
+    this.drawBlock(this.xOrigin, this.yOrigin);
+    this.drawBlock(this.xOrigin + this.blockSize, this.yOrigin);
+    this.drawBlock(this.xOrigin + this.blockSize * 2, this.yOrigin);
+    this.drawBlock(
+      this.xOrigin + this.blockSize,
+      this.yOrigin + this.blockSize
+    );
+  }
+
+  clear() {
+    this.clearBlock(this.xOrigin, this.yOrigin);
+    this.clearBlock(this.xOrigin + this.blockSize, this.yOrigin);
+    this.clearBlock(this.xOrigin + this.blockSize * 2, this.yOrigin);
+    this.clearBlock(
+      this.xOrigin + this.blockSize,
+      this.yOrigin + this.blockSize
+    );
   }
 }

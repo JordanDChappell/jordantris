@@ -30,7 +30,7 @@ export default class GameCanvas {
 
     // * Draw initial graphics
     var context = canvas.getContext('2d');
-    
+
     // draw the game boundary
     context.strokeStyle = '#000000';
     context.strokeRect(padding, 0, width - padding * 2, height);
@@ -56,7 +56,10 @@ export default class GameCanvas {
     var canvas = document.createElement('canvas');
     canvas.setAttribute('id', `${this.id}-foreground`);
     canvas.setAttribute('class', styles['canvas']);
-    canvas.setAttribute('style', `left: calc(50% - ${(this.width - this.padding * 2) / 2}px)`);
+    canvas.setAttribute(
+      'style',
+      `left: calc(50% - ${(this.width - this.padding * 2) / 2}px)`
+    );
 
     canvas.height = height;
     canvas.width = width - padding * 2;

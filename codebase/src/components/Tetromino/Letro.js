@@ -5,10 +5,29 @@ export default class Letro extends Tetromino {
     super(context, blockSize, '#7EC0EE');
   }
 
-  draw(x, y) {
-    this.drawBlock(x, y);
-    this.drawBlock(x, y + this.blockSize);
-    this.drawBlock(x + this.blockSize, y + this.blockSize);
-    this.drawBlock(x + (this.blockSize * 2), y + this.blockSize);
+  draw() {
+    this.drawBlock(this.xOrigin, this.yOrigin);
+    this.drawBlock(this.xOrigin, this.yOrigin + this.blockSize);
+    this.drawBlock(
+      this.xOrigin + this.blockSize,
+      this.yOrigin + this.blockSize
+    );
+    this.drawBlock(
+      this.xOrigin + this.blockSize * 2,
+      this.yOrigin + this.blockSize
+    );
+  }
+
+  clear() {
+    this.clearBlock(this.xOrigin, this.yOrigin);
+    this.clearBlock(this.xOrigin, this.yOrigin + this.blockSize);
+    this.clearBlock(
+      this.xOrigin + this.blockSize,
+      this.yOrigin + this.blockSize
+    );
+    this.clearBlock(
+      this.xOrigin + this.blockSize * 2,
+      this.yOrigin + this.blockSize
+    );
   }
 }

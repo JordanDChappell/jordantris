@@ -4,20 +4,20 @@ import Sqetro from './Sqetro';
 import Letro from './Letro';
 
 export default function createTetromino(shape, context, size) {
-  switch(shape) {
-    case "z": {
+  switch (shape) {
+    case 'z': {
       return new Zetro(context, size);
     }
-    case "t": {
+    case 't': {
       return new Tetro(context, size);
     }
-    case "square": {
+    case 'square': {
       return new Sqetro(context, size);
     }
-    case "l": {
+    case 'l': {
       return new Letro(context, size);
     }
-    default : {
+    default: {
       return null;
     }
   }

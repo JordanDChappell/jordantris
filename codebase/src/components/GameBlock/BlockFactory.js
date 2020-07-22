@@ -24,7 +24,7 @@ export default function createBlock(shape, context, size) {
     case 'L': {
       return new LBlock(context, size);
     }
-    case 'I':{
+    case 'I': {
       return new IBlock(context, size);
     }
     default: {

@@ -18,14 +18,14 @@ export default class Block {
    */
   drawBlock(x, y) {
     this.context.fillStyle = this.color;
-    this.context.strokeRect(x, y, this.blockSize, this.blockSize);  // draw the blocks outline
-    this.context.fillRect(x + 1, y + 1, this.blockSize - 2, this.blockSize - 2);  // draw the blocks color, slightly smaller than the outline
+    this.context.strokeRect(x, y, this.blockSize, this.blockSize); // draw the blocks outline
+    this.context.fillRect(x + 1, y + 1, this.blockSize - 2, this.blockSize - 2); // draw the blocks color, slightly smaller than the outline
   }
 
   /**
    * * Clear a single block from the canvas.
    * @param {number} x | x-axis local coordinate to clear a block from
-   * @param {number} y | y-axis local coordinate to clear a block from 
+   * @param {number} y | y-axis local coordinate to clear a block from
    */
   clearBlock(x, y) {
     // * Clear a slightly larger area (1 pixel in all directions) around a block.
@@ -58,7 +58,8 @@ export default class Block {
     for (let y = 0; y < shape.length; y++) {
       var row = shape[y];
       for (let x = 0; x < row.length; x++) {
-        if (row[x]) { // only draw blocks where a 1 is set
+        if (row[x]) {
+          // only draw blocks where a 1 is set
           this.drawBlock(
             this.xOrigin + x * this.blockSize,
             this.yOrigin + y * this.blockSize

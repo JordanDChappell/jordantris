@@ -4,6 +4,8 @@ import createTetromino from './components/Tetromino/BlockFactory';
 const tetrominoSize = 24;
 var gameCanvas = new GameCanvas('jordantris-canvas', tetrominoSize);
 var currentTetromino;
+var tetrominoList = ['l', 'long', 's', 'z', 't'];
+var tetrominoIndex = 0;
 var xpos = 0;
 var ypos = 0;
 
@@ -17,7 +19,7 @@ export function init(container) {
 
 export function run() {
   currentTetromino = createTetromino(
-    't',
+    tetrominoList[tetrominoIndex],
     gameCanvas.foregroundLayer.getContext('2d'),
     tetrominoSize
   );
@@ -25,6 +27,7 @@ export function run() {
   if (currentTetromino) {
     currentTetromino.moveOrigin(xpos, ypos);
     currentTetromino.draw();
+    tetrominoIndex++;
   }
 }
 
@@ -47,5 +50,23 @@ function setKeyboardListeners() {
       xpos -= 1;
       currentTetromino.moveTo(xpos, currentTetromino.yOrigin);
     }
+
+    if (event.keyCode === 38) {
+      currentTetromino.rotate();
+    }
+
+    if (event.keyCode === 40) {
+      currentTetromino.clear();
+      currentTetromino = createTetromino(
+        tetrominoList[tetrominoIndex],
+        gameCanvas.foregroundLayer.getContext('2d'),
+        tetrominoSize
+      );
+      tetrominoIndex = tetrominoIndex < 4 ? tetrominoIndex + 1 : 0;
+
+      currentTetromino.moveOrigin(xpos, ypos);
+      currentTetromino.draw();
+    }
   };
 }
+ 

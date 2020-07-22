@@ -1,4 +1,4 @@
-export default class Tetromino {
+export default class Block {
   constructor(context, blockSize, color) {
     this.context = context;
     this.blockSize = blockSize;

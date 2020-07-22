@@ -1,6 +1,6 @@
-import Tetromino from './Tetromino';
+import Block from './Block';
 
-export default class Longtro extends Tetromino {
+export default class IBlock extends Block {
   constructor(context, blockSize) {
     super(context, blockSize, '#37FDFC');
     this.shapeMatrix = [

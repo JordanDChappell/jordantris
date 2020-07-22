@@ -1,6 +1,6 @@
-import Tetromino from './Tetromino';
+import Block from './Block';
 
-export default class Zetro extends Tetromino {
+export default class ZBlock extends Block {
   constructor(context, blockSize) {
     super(context, blockSize, '#FF3213');
     this.shapeMatrix = [

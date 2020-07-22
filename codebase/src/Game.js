@@ -1,11 +1,12 @@
 import GameCanvas from './components/GameCanvas/GameCanvas';
-import createTetromino from './components/Tetromino/BlockFactory';
+import createTetromino from './components/GameBlock/BlockFactory';
 
-const tetrominoSize = 24;
-var gameCanvas = new GameCanvas('jordantris-canvas', tetrominoSize);
-var currentTetromino;
-var tetrominoList = ['l', 'long', 's', 'z', 't'];
-var tetrominoIndex = 0;
+// * Root scoped game variables
+const blockSize = 24;
+var gameCanvas = new GameCanvas('jordantris-canvas', blockSize);
+var currentShape;
+var shapeList = ['L', 'I', 'S', 'Z', 'T'];
+var shapeIndex = 0;
 var xpos = 0;
 var ypos = 0;
 
@@ -18,16 +19,16 @@ export function init(container) {
 }
 
 export function run() {
-  currentTetromino = createTetromino(
-    tetrominoList[tetrominoIndex],
+  currentShape = createTetromino(
+    shapeList[shapeIndex],
     gameCanvas.foregroundLayer.getContext('2d'),
-    tetrominoSize
+    blockSize
   );
 
-  if (currentTetromino) {
-    currentTetromino.moveOrigin(xpos, ypos);
-    currentTetromino.draw();
-    tetrominoIndex++;
+  if (currentShape) {
+    currentShape.moveOrigin(xpos, ypos);
+    currentShape.draw();
+    shapeIndex++;
   }
 }
 
@@ -36,36 +37,36 @@ function setKeyboardListeners() {
     console.log(event);
     // on 'c' key down event
     if (event.keyCode === 67) {
-      currentTetromino.clear();
+      currentShape.clear();
     }
 
     // on right button
     if (event.keyCode === 39) {
       xpos += 1;
-      currentTetromino.moveTo(xpos, currentTetromino.yOrigin);
+      currentShape.moveTo(xpos, currentShape.yOrigin);
     }
 
     // on left button
     if (event.keyCode === 37) {
       xpos -= 1;
-      currentTetromino.moveTo(xpos, currentTetromino.yOrigin);
+      currentShape.moveTo(xpos, currentShape.yOrigin);
     }
 
     if (event.keyCode === 38) {
-      currentTetromino.rotate();
+      currentShape.rotate();
     }
 
     if (event.keyCode === 40) {
-      currentTetromino.clear();
-      currentTetromino = createTetromino(
-        tetrominoList[tetrominoIndex],
+      currentShape.clear();
+      currentShape = createTetromino(
+        shapeList[shapeIndex],
         gameCanvas.foregroundLayer.getContext('2d'),
-        tetrominoSize
+        blockSize
       );
-      tetrominoIndex = tetrominoIndex < 4 ? tetrominoIndex + 1 : 0;
+      shapeIndex = shapeIndex < 4 ? shapeIndex + 1 : 0;
 
-      currentTetromino.moveOrigin(xpos, ypos);
-      currentTetromino.draw();
+      currentShape.moveOrigin(xpos, ypos);
+      currentShape.draw();
     }
   };
 }

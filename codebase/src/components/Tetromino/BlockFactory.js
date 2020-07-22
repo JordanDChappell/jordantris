@@ -2,6 +2,7 @@ import Tetro from './Tetro';
 import Zetro from './Zetro';
 import Sqetro from './Sqetro';
 import Letro from './Letro';
+import Longtro from './Longtro';
 
 export default function createTetromino(shape, context, size) {
   switch (shape) {
@@ -11,11 +12,14 @@ export default function createTetromino(shape, context, size) {
     case 't': {
       return new Tetro(context, size);
     }
-    case 'square': {
+    case 's': {
       return new Sqetro(context, size);
     }
     case 'l': {
       return new Letro(context, size);
+    }
+    case 'long':{
+      return new Longtro(context, size);
     }
     default: {
       return null;

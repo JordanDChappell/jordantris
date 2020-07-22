@@ -3,18 +3,23 @@ import createTetromino from './components/GameBlock/BlockFactory';
 
 // * Root scoped game variables
 const blockSize = 24;
-var gameCanvas = new GameCanvas('jordantris-canvas', blockSize);
-var currentShape;
-var shapeList = ['L', 'I', 'S', 'Z', 'T'];
-var shapeIndex = 0;
-var xpos = 0;
-var ypos = 0;
+var gameCanvas = new GameCanvas('jordantris-canvas', blockSize); // create a game canvas object, with foreground / background
+var gameBoundary = [
+  // calculate the game boundary size in block rather than pixels
+  gameCanvas.foregroundLayer.width / blockSize,
+  gameCanvas.foregroundLayer.height / blockSize
+];
 
+// * Root scoped shape variables
+var currentShape; // holds the shape being controlled
+var shapeList = ['L', 'I', 'S', 'Z', 'T']; // a list of all shape characters for creating blocks
+var shapeIndex = 0; // indexes the shapeList
+var xpos = 0; // current x origin / position of the shape being controlled
+var ypos = 0; // current y origin / position of the shape being controlled
 
 export function init(container) {
   container.appendChild(gameCanvas.backgroundLayer);
   container.appendChild(gameCanvas.foregroundLayer);
-
   setKeyboardListeners();
 }
 
@@ -70,4 +75,3 @@ function setKeyboardListeners() {
     }
   };
 }
- 

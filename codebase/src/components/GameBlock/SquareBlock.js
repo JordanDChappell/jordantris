@@ -5,9 +5,8 @@ export default class SquareBlock extends Block {
     super(context, blockSize, '#FFD500');
     this.shapeMatrix = [
       [
-        [1, 1, 0],
-        [1, 1, 0],
-        [0, 0, 0]
+        [1, 1],
+        [1, 1]
       ]
     ];
   }

@@ -113,4 +113,62 @@ export default class Block {
         : 0; // handle overflows for rotationIndex, only go to 90deg * 4 for a complete circle
     this.draw(); // draw the shape at the new position in the matrix
   }
+
+  detectCollision(gameBoundary, gameState, nextPosition) {
+    // * Calculate the 'hitbox' of the shape from the origin
+    var shape = this.shapeMatrix[this.rotationIndex];
+    var start = [];
+    var end = [];
+
+    for (let y = 0; y < shape.length; y++) {
+      var row = shape[y];
+      for (let x = 0; x < row.length; x++) {
+        if (row[x]) {
+          console.log(x, y);
+          if (start.length === 0) {
+            start = [x, y];
+          }
+          if (end.length === 0) {
+            end = [x, y];
+          }
+          if (x < start[0]) {
+            start[0] = x;
+          }
+          if (y < start[1]) {
+            start[1] = y;
+          }
+          if (x > end[0]) {
+            end[0] = x;
+          }
+          if (y > end[1]) {
+            end[1] = y;
+          }
+        }
+      }
+    }
+
+    var offset = [end[0] - start[0] + 1, end[1] - start[1] + 1];
+    console.log('shape', shape);
+    console.log('start', start);
+    console.log('end', end);
+    console.log('offset', offset);
+    console.log('nextPosition', nextPosition);
+    console.log('gameBoundary', gameBoundary);
+
+    // * Determine the if the shape will collide with a game boundary
+    // check for negative positions first, easy check if the piece is going too far left
+    if (nextPosition[0] + start[0] < 0 || nextPosition[1] + start[1] < 0) {
+      return true;
+    }
+
+    // check for collision on the positive boundaries
+    if (
+      nextPosition[0] + offset[0] + start[0] > gameBoundary[0] ||
+      nextPosition[1] + offset[1] + start[1] > gameBoundary[1]
+    ) {
+      return true;
+    }
+
+    return false; // no collision detected
+  }
 }

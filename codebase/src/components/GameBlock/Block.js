@@ -105,55 +105,92 @@ export default class Block {
   /**
    * * Helper function to clear a block and select a new rotation in the shape matrix.
    */
-  rotate() {
+  rotate(gameBoundary, position) {
     this.clear(); // clear the shape before rotating, uses the current shape in the matrix to clear
     this.rotationIndex =
       this.rotationIndex < this.shapeMatrix.length - 1
         ? this.rotationIndex + 1
         : 0; // handle overflows for rotationIndex, only go to 90deg * 4 for a complete circle
+
+    // * Detect collisions as a result of the rotation
+    let collision = this.detectBoundaryCollision(gameBoundary, position);
+    console.log("rotate() -> collision = ", collision);    
     this.draw(); // draw the shape at the new position in the matrix
   }
 
-  detectCollision(gameBoundary, gameState, nextPosition) {
-    // * Calculate the 'hitbox' of the shape from the origin
-    var shape = this.shapeMatrix[this.rotationIndex];
-    var start = [];
-    var end = [];
+  // ############# Collision Functions #################### //
 
+  /**
+   * * Calculates the basic hitbox for a shape, max of x,y footprint.
+   */
+  calculateHitbox() {
+    var shape = this.shapeMatrix[this.rotationIndex];
+    var start = []; // starting x, y coordinates of the shape, the top left most block
+    var end = []; // ending x, y coordinates of the shape, the bottom right most block
+
+    // * Loop through the shape matrix to determine the start / end coordinates
     for (let y = 0; y < shape.length; y++) {
       var row = shape[y];
       for (let x = 0; x < row.length; x++) {
         if (row[x]) {
-          console.log(x, y);
-          if (start.length === 0) {
+          if (start.length === 0) { // special case on first loop
             start = [x, y];
           }
-          if (end.length === 0) {
+          if (end.length === 0) { // special case on first loop
             end = [x, y];
           }
-          if (x < start[0]) {
+          if (x < start[0]) { // x coordinate that is the smallest
             start[0] = x;
           }
-          if (y < start[1]) {
+          if (y < start[1]) { // y coordinate that is the smallest
             start[1] = y;
           }
-          if (x > end[0]) {
+          if (x > end[0]) { // largest x coordinate
             end[0] = x;
           }
-          if (y > end[1]) {
+          if (y > end[1]) { // largest y coordinate
             end[1] = y;
           }
         }
       }
     }
 
-    var offset = [end[0] - start[0] + 1, end[1] - start[1] + 1];
-    console.log('shape', shape);
-    console.log('start', start);
-    console.log('end', end);
-    console.log('offset', offset);
-    console.log('nextPosition', nextPosition);
-    console.log('gameBoundary', gameBoundary);
+    var offset = [end[0] - start[0] + 1, end[1] - start[1] + 1];  // offset determines the right/down direction length of the shape
+    return { start, offset };
+  }
+
+  calculateLengthMatrix() {
+    var shape = this.shapeMatrix[this.rotationIndex];
+    var rowLengths = [];
+    var columnLengths = [];
+
+    // * Initialize the length arrays
+    for (let y = 0; y < shape.length; y++) {
+      columnLengths[y] = 0;
+    }
+    for (let x = 0; x < shape[0].length; x++) {
+      rowLengths[x] = 0;
+    }
+
+    // * A nested loop to determine the length of the shape matrix at each local origin.
+    for (let y = 0; y < shape.length; y++) {
+      console.log(shape[y])
+      for (let x = 0; x < shape[y].length; x++) {
+        console.log(shape[y][x]);
+        // console.log(x, y);
+        if (shape[y][x]) {
+
+          // console.log(`block found at ${x}, ${y}`);
+        }
+      }
+    }
+
+    console.log(rowLengths, columnLengths);
+  }
+
+  detectBoundaryCollision(gameBoundary, nextPosition) {
+    // * Calculate the 'hitbox' of the shape from the origin
+    var { start, offset } = this.calculateHitbox();
 
     // * Determine the if the shape will collide with a game boundary
     // check for negative positions first, easy check if the piece is going too far left

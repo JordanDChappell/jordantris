@@ -34,13 +34,12 @@ export function run() {
   if (currentShape) {
     currentShape.moveOrigin(xpos, ypos);
     currentShape.draw();
-    shapeIndex++;
   }
 }
 
 function setKeyboardListeners() {
   document.onkeydown = (event) => {
-    console.log(event);
+    // console.log(event);
     // on 'c' key down event
     if (event.keyCode === 67) {
       // clear values
@@ -58,12 +57,13 @@ function setKeyboardListeners() {
 
     if (event.keyCode === 32) {
       currentShape.clear();
+      shapeIndex = shapeIndex < shapeList.length - 1 ? shapeIndex + 1 : 0;
       currentShape = createTetromino(
         shapeList[shapeIndex],
         gameCanvas.foregroundLayer.getContext('2d'),
         blockSize
       );
-      shapeIndex = shapeIndex < shapeList.length - 1 ? shapeIndex + 1 : 0;
+      currentShape.calculateLengthMatrix();
       currentShape.moveOrigin(xpos, ypos);
       currentShape.draw();
     }
@@ -71,7 +71,7 @@ function setKeyboardListeners() {
     // on right arrow
     if (event.keyCode === 39) {
       let nextXPos = xpos + 1;
-      let collision = currentShape.detectCollision(gameBoundary, gameState, [nextXPos, ypos]);
+      let collision = currentShape.detectBoundaryCollision(gameBoundary, [nextXPos, ypos]);
       if (!collision) {
         xpos = nextXPos;
         currentShape.moveTo(xpos, ypos);
@@ -81,7 +81,7 @@ function setKeyboardListeners() {
     // on left arrow
     if (event.keyCode === 37) {
       let nextXPos = xpos - 1;
-      let collision = currentShape.detectCollision(gameBoundary, gameState, [nextXPos, ypos]);
+      let collision = currentShape.detectBoundaryCollision(gameBoundary, [nextXPos, ypos]);
       if (!collision) {
         xpos = nextXPos;
         currentShape.moveTo(xpos, ypos);
@@ -90,13 +90,13 @@ function setKeyboardListeners() {
 
     // on up arrow
     if (event.keyCode === 38) {
-      currentShape.rotate();
+      currentShape.rotate(gameBoundary, [xpos, ypos]);
     }
 
     // on down arrow
     if (event.keyCode === 40) {
       let nextYPos = ypos + 1;
-      let collision = currentShape.detectCollision(gameBoundary, gameState, [xpos, nextYPos]);
+      let collision = currentShape.detectBoundaryCollision(gameBoundary, [xpos, nextYPos]);
       if (!collision) {
         ypos = nextYPos;
         currentShape.moveTo(xpos, ypos);

@@ -13,7 +13,7 @@ var gameState = [];
 
 // * Root scoped shape variables
 var currentShape; // holds the shape being controlled
-var shapeList = ['L', 'I', 'S', 'Z', 'T']; // a list of all shape characters for creating blocks
+var shapeList = ['L', 'I', 'S', 'Z', 'T', 'J', 'O']; // a list of all shape characters for creating blocks
 var shapeIndex = 0; // indexes the shapeList
 var xpos = 0; // current x origin / position of the shape being controlled
 var ypos = 0; // current y origin / position of the shape being controlled
@@ -63,7 +63,7 @@ function setKeyboardListeners() {
         gameCanvas.foregroundLayer.getContext('2d'),
         blockSize
       );
-      shapeIndex = shapeIndex < 4 ? shapeIndex + 1 : 0;
+      shapeIndex = shapeIndex < shapeList.length - 1 ? shapeIndex + 1 : 0;
       currentShape.moveOrigin(xpos, ypos);
       currentShape.draw();
     }

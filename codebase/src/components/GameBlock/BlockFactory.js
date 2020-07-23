@@ -1,8 +1,10 @@
 import TBLock from './TBlock';
 import ZBlock from './ZBLock';
-import SquareBlock from './SquareBlock';
+import OBlock from './OBlock';
 import LBlock from './LBlock';
 import IBlock from './IBlock';
+import SBlock from './SBlock';
+import JBlock from './JBlock';
 
 /**
  * * Block shape factory, creates and returns the require game pieces.
@@ -19,13 +21,19 @@ export default function createBlock(shape, context, size) {
       return new TBLock(context, size);
     }
     case 'S': {
-      return new SquareBlock(context, size);
+      return new SBlock(context, size);
     }
     case 'L': {
       return new LBlock(context, size);
     }
     case 'I': {
       return new IBlock(context, size);
+    }
+    case 'J': {
+      return new JBlock(context, size);
+    }
+    case 'O': {
+      return new OBlock(context, size)
     }
     default: {
       return null;

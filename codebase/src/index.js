@@ -1,13 +1,13 @@
-import {init, run} from './game';
+import { init, run } from './game';
 
 import './styles/global/main.global.css';
 
-const containerId = "game-container";
+const containerId = 'game-container';
 
 function component() {
   const container = document.createElement('div');
   container.setAttribute('id', containerId);
-  container.setAttribute('class', containerId);  
+  container.setAttribute('class', containerId);
   return container;
 }
 

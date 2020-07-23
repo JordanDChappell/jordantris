@@ -9,7 +9,7 @@ var gameBoundary = [
   gameCanvas.foregroundLayer.width / blockSize,
   gameCanvas.foregroundLayer.height / blockSize
 ];
-var gameState = [];
+// var gameState = [];
 
 // * Root scoped shape variables
 var currentShape; // holds the shape being controlled
@@ -71,7 +71,10 @@ function setKeyboardListeners() {
     // on right arrow
     if (event.keyCode === 39) {
       let nextXPos = xpos + 1;
-      let collision = currentShape.detectBoundaryCollision(gameBoundary, [nextXPos, ypos]);
+      let collision = currentShape.detectBoundaryCollision(gameBoundary, [
+        nextXPos,
+        ypos
+      ]);
       if (!collision) {
         xpos = nextXPos;
         currentShape.moveTo(xpos, ypos);
@@ -81,7 +84,10 @@ function setKeyboardListeners() {
     // on left arrow
     if (event.keyCode === 37) {
       let nextXPos = xpos - 1;
-      let collision = currentShape.detectBoundaryCollision(gameBoundary, [nextXPos, ypos]);
+      let collision = currentShape.detectBoundaryCollision(gameBoundary, [
+        nextXPos,
+        ypos
+      ]);
       if (!collision) {
         xpos = nextXPos;
         currentShape.moveTo(xpos, ypos);
@@ -96,7 +102,10 @@ function setKeyboardListeners() {
     // on down arrow
     if (event.keyCode === 40) {
       let nextYPos = ypos + 1;
-      let collision = currentShape.detectBoundaryCollision(gameBoundary, [xpos, nextYPos]);
+      let collision = currentShape.detectBoundaryCollision(gameBoundary, [
+        xpos,
+        nextYPos
+      ]);
       if (!collision) {
         ypos = nextYPos;
         currentShape.moveTo(xpos, ypos);

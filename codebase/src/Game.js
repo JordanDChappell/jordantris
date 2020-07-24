@@ -1,7 +1,16 @@
 import GameCanvas from './components/GameCanvas/GameCanvas';
 import createTetromino from './components/GameBlock/BlockFactory';
+import KeyHandler from './components/GameInput/KeyHandler';
+
+// * Root scoped animation variables
+var xAxisTimestamp = 0;
+var xAxisSpeed = 0.06;
+var yAxisTimestamp = 0;
+var yAxisSpeed = 0.5;
+// var fps;
 
 // * Root scoped game variables
+var keyHandler = new KeyHandler();
 const blockSize = 24;
 var gameCanvas = new GameCanvas('jordantris-canvas', blockSize); // create a game canvas object, with foreground / background
 var gameBoundary = [
@@ -9,107 +18,82 @@ var gameBoundary = [
   gameCanvas.foregroundLayer.width / blockSize,
   gameCanvas.foregroundLayer.height / blockSize
 ];
-// var gameState = [];
 
 // * Root scoped shape variables
 var currentShape; // holds the shape being controlled
 var shapeList = ['L', 'I', 'S', 'Z', 'T', 'J', 'O']; // a list of all shape characters for creating blocks
 var shapeIndex = 0; // indexes the shapeList
-var xpos = 0; // current x origin / position of the shape being controlled
-var ypos = 0; // current y origin / position of the shape being controlled
 
 export function init(container) {
   container.appendChild(gameCanvas.backgroundLayer);
   container.appendChild(gameCanvas.foregroundLayer);
-  setKeyboardListeners();
-}
 
-export function run() {
   currentShape = createTetromino(
     shapeList[shapeIndex],
     gameCanvas.foregroundLayer.getContext('2d'),
     blockSize
   );
+  currentShape.draw();
 
-  if (currentShape) {
-    currentShape.moveOrigin(xpos, ypos);
+  setKeyboardListeners();
+  window.requestAnimationFrame(run);
+}
+
+export function run(timestamp) {
+  // * Calculate the number of seconds passed since the last frame
+  let secondsPassedSinceX = (timestamp - xAxisTimestamp) / 1000;
+  let secondsPassedSinceY = (timestamp - yAxisTimestamp) / 1000;
+
+  if (secondsPassedSinceX > xAxisSpeed) {
+    xAxisTimestamp = timestamp;
+    handleInput();
+  }
+  if (secondsPassedSinceY > yAxisSpeed) {
+    yAxisTimestamp = timestamp;
+    handleDrop();
+  }
+
+  window.requestAnimationFrame(run);
+}
+
+function swapPieces() {
+  currentShape.clear();
+  shapeIndex = shapeIndex < shapeList.length - 1 ? shapeIndex + 1 : 0;
+  currentShape = createTetromino(
+    shapeList[shapeIndex],
+    gameCanvas.foregroundLayer.getContext('2d'),
+    blockSize
+  );
+  currentShape.draw();
+}
+
+function handleDrop() {
+  let shapeAtBottom = currentShape.moveDown(gameBoundary);
+
+  if (shapeAtBottom) {
+    shapeIndex = shapeIndex < shapeList.length - 1 ? shapeIndex + 1 : 0;
+    currentShape = createTetromino(
+      shapeList[shapeIndex],
+      gameCanvas.foregroundLayer.getContext('2d'),
+      blockSize
+    );
     currentShape.draw();
   }
 }
 
+function handleInput() {
+  if (keyHandler.isDown(keyHandler.SPACE)) swapPieces();
+  if (keyHandler.isDown(keyHandler.UP)) currentShape.rotate(gameBoundary);
+  if (keyHandler.isDown(keyHandler.LEFT)) currentShape.moveLeft(gameBoundary);
+  if (keyHandler.isDown(keyHandler.DOWN)) handleDrop();
+  if (keyHandler.isDown(keyHandler.RIGHT)) currentShape.moveRight(gameBoundary);
+}
+
 function setKeyboardListeners() {
-  document.onkeydown = (event) => {
-    // console.log(event);
-    // on 'c' key down event
-    if (event.keyCode === 67) {
-      // clear values
-      xpos = 0;
-      ypos = 0;
-      currentShape.clear();
-      currentShape = createTetromino(
-        shapeList[shapeIndex],
-        gameCanvas.foregroundLayer.getContext('2d'),
-        blockSize
-      );
-      currentShape.moveOrigin(xpos, ypos);
-      currentShape.draw();
-    }
-
-    if (event.keyCode === 32) {
-      currentShape.clear();
-      shapeIndex = shapeIndex < shapeList.length - 1 ? shapeIndex + 1 : 0;
-      currentShape = createTetromino(
-        shapeList[shapeIndex],
-        gameCanvas.foregroundLayer.getContext('2d'),
-        blockSize
-      );
-      currentShape.calculateLengthMatrix();
-      currentShape.moveOrigin(xpos, ypos);
-      currentShape.draw();
-    }
-
-    // on right arrow
-    if (event.keyCode === 39) {
-      let nextXPos = xpos + 1;
-      let collision = currentShape.detectBoundaryCollision(gameBoundary, [
-        nextXPos,
-        ypos
-      ]);
-      if (!collision) {
-        xpos = nextXPos;
-        currentShape.moveTo(xpos, ypos);
-      }
-    }
-
-    // on left arrow
-    if (event.keyCode === 37) {
-      let nextXPos = xpos - 1;
-      let collision = currentShape.detectBoundaryCollision(gameBoundary, [
-        nextXPos,
-        ypos
-      ]);
-      if (!collision) {
-        xpos = nextXPos;
-        currentShape.moveTo(xpos, ypos);
-      }
-    }
-
-    // on up arrow
-    if (event.keyCode === 38) {
-      currentShape.rotate(gameBoundary, [xpos, ypos]);
-    }
-
-    // on down arrow
-    if (event.keyCode === 40) {
-      let nextYPos = ypos + 1;
-      let collision = currentShape.detectBoundaryCollision(gameBoundary, [
-        xpos,
-        nextYPos
-      ]);
-      if (!collision) {
-        ypos = nextYPos;
-        currentShape.moveTo(xpos, ypos);
-      }
-    }
-  };
+  document.addEventListener('keyup', (event) => {
+    keyHandler.onKeyUp(event);
+  });
+  document.addEventListener('keydown', (event) => {
+    keyHandler.onKeyDown(event);
+  });
 }

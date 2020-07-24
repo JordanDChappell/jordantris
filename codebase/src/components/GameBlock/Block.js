@@ -1,11 +1,11 @@
 export default class Block {
   constructor(context, blockSize, color) {
-    this.context = context;
-    this.blockSize = blockSize;
-    this.color = color;
-    this.xOrigin = 0;
-    this.yOrigin = 0;
-    this.rotationIndex = 0;
+    this.context = context; // canvas context for drawing onto
+    this.blockSize = blockSize; // block size in pixels of each block that makes up the shape
+    this.color = color; // hex color of the filled blocks
+    this.xPos = 0; // x position normalized the block size (0 = 0, 1 = this.blockSize, 2 = this.blockSize * 2)
+    this.yPos = 0; // normalized y position
+    this.rotationIndex = 0; // index in the rotation matrix
   }
 
   // ################ Drawing functions ################ //
@@ -38,17 +38,6 @@ export default class Block {
   }
 
   /**
-   * * Moves the origin of the block to a new place, handles grid transform from pixels to local
-   * * coordinate system.
-   * @param {number} x | x-axis coordinate in the grid
-   * @param {number} y | y-axis coordinate in the grid
-   */
-  moveOrigin(x, y) {
-    this.xOrigin = x * this.blockSize;
-    this.yOrigin = y * this.blockSize;
-  }
-
-  /**
    * * Draw the current shape in the canvas, using combinations of squares.
    */
   draw() {
@@ -61,8 +50,8 @@ export default class Block {
         if (row[x]) {
           // only draw blocks where a 1 is set
           this.drawBlock(
-            this.xOrigin + x * this.blockSize,
-            this.yOrigin + y * this.blockSize
+            this.xPos * this.blockSize + x * this.blockSize,
+            this.yPos * this.blockSize + y * this.blockSize
           );
         }
       }
@@ -81,8 +70,8 @@ export default class Block {
       for (let x = 0; x < row.length; x++) {
         if (row[x]) {
           this.clearBlock(
-            this.xOrigin + x * this.blockSize,
-            this.yOrigin + y * this.blockSize
+            this.xPos * this.blockSize + x * this.blockSize,
+            this.yPos * this.blockSize + y * this.blockSize
           );
         }
       }
@@ -98,23 +87,66 @@ export default class Block {
    */
   moveTo(x, y) {
     this.clear();
-    this.moveOrigin(x, y);
+    this.xPos = x;
+    this.yPos = y;
     this.draw();
+  }
+
+  moveLeft(gameBoundary) {
+    let xpos = this.xPos - 1;
+    let ypos = this.yPos;
+
+    if (this.detectBoundaryCollision(gameBoundary, [xpos, ypos]) === null) {
+      this.moveTo(xpos, ypos);
+    }
+  }
+
+  moveRight(gameBoundary) {
+    let xpos = this.xPos + 1;
+    let ypos = this.yPos;
+
+    if (this.detectBoundaryCollision(gameBoundary, [xpos, ypos]) === null) {
+      this.moveTo(xpos, ypos);
+    }
+  }
+
+  moveDown(gameBoundary) {
+    let xpos = this.xPos;
+    let ypos = this.yPos + 1;
+
+    if (this.detectBoundaryCollision(gameBoundary, [xpos, ypos]) === null) {
+      this.moveTo(xpos, ypos);
+      return false;
+    }
+    return true;
   }
 
   /**
    * * Helper function to clear a block and select a new rotation in the shape matrix.
    */
-  rotate(gameBoundary, position) {
+  rotate(gameBoundary) {
     this.clear(); // clear the shape before rotating, uses the current shape in the matrix to clear
     this.rotationIndex =
       this.rotationIndex < this.shapeMatrix.length - 1
         ? this.rotationIndex + 1
         : 0; // handle overflows for rotationIndex, only go to 90deg * 4 for a complete circle
 
-    // * Detect collisions as a result of the rotation
-    let collision = this.detectBoundaryCollision(gameBoundary, position);
-    console.log("rotate() -> collision = ", collision);    
+    // * Detect collisions as a result of the rotation (when a shape rotates at it's current position it may overflow the boundary of the game)
+    let collision = this.detectBoundaryCollision(gameBoundary, [
+      this.xPos,
+      this.yPos
+    ]);
+
+    // * If there are collisions then we need to move the shape back into the playing field
+    if (collision !== null && collision.length > 0) {
+      // * If collision coordinates are positive then a collision has been calculated for that axis
+      if (collision[0] > 0) {
+        this.moveTo(this.xPos - collision[0], this.yPos);
+      }
+      if (collision[1] > 0) {
+        this.moveTo(this.xPos, this.yPos - collision[1]);
+      }
+    }
     this.draw(); // draw the shape at the new position in the matrix
   }
 
@@ -133,29 +165,35 @@ export default class Block {
       var row = shape[y];
       for (let x = 0; x < row.length; x++) {
         if (row[x]) {
-          if (start.length === 0) { // special case on first loop
+          if (start.length === 0) {
+            // special case on first loop
             start = [x, y];
           }
-          if (end.length === 0) { // special case on first loop
+          if (end.length === 0) {
+            // special case on first loop
             end = [x, y];
           }
-          if (x < start[0]) { // x coordinate that is the smallest
+          if (x < start[0]) {
+            // x coordinate that is the smallest
             start[0] = x;
           }
-          if (y < start[1]) { // y coordinate that is the smallest
+          if (y < start[1]) {
+            // y coordinate that is the smallest
             start[1] = y;
           }
-          if (x > end[0]) { // largest x coordinate
+          if (x > end[0]) {
+            // largest x coordinate
             end[0] = x;
           }
-          if (y > end[1]) { // largest y coordinate
+          if (y > end[1]) {
+            // largest y coordinate
             end[1] = y;
           }
         }
       }
     }
 
-    var offset = [end[0] - start[0] + 1, end[1] - start[1] + 1];  // offset determines the right/down direction length of the shape
+    var offset = [end[0] - start[0] + 1, end[1] - start[1] + 1]; // offset determines the right/down direction length of the shape
     return { start, offset };
   }
 
@@ -174,13 +212,12 @@ export default class Block {
 
     // * A nested loop to determine the length of the shape matrix at each local origin.
     for (let y = 0; y < shape.length; y++) {
-      console.log(shape[y])
+      console.log(shape[y]);
       for (let x = 0; x < shape[y].length; x++) {
         console.log(shape[y][x]);
         // console.log(x, y);
         if (shape[y][x]) {
-
-          // console.log(`block found at ${x}, ${y}`);
+          console.log(`block found at ${x}, ${y}`);
         }
       }
     }
@@ -188,14 +225,22 @@ export default class Block {
     console.log(rowLengths, columnLengths);
   }
 
+  /**
+   * * Detect collisions on the x, y boundaries of the canvas, return a collision array of numbers.
+   * @param {array} gameBoundary | x, y lengths of the game boundary
+   * @param {array} nextPosition | possible next position of the shape, used to determine if the shape would move out of the boundary
+   */
   detectBoundaryCollision(gameBoundary, nextPosition) {
     // * Calculate the 'hitbox' of the shape from the origin
     var { start, offset } = this.calculateHitbox();
+    var collisions = []; // return a x, y pair that determines how many blocks the collision occured for
 
     // * Determine the if the shape will collide with a game boundary
     // check for negative positions first, easy check if the piece is going too far left
     if (nextPosition[0] + start[0] < 0 || nextPosition[1] + start[1] < 0) {
-      return true;
+      collisions[0] = nextPosition[0] + start[0];
+      collisions[1] = nextPosition[1] + start[1];
+      return collisions;
     }
 
     // check for collision on the positive boundaries
@@ -203,9 +248,11 @@ export default class Block {
       nextPosition[0] + offset[0] + start[0] > gameBoundary[0] ||
       nextPosition[1] + offset[1] + start[1] > gameBoundary[1]
     ) {
-      return true;
+      collisions[0] = nextPosition[0] + offset[0] + start[0] - gameBoundary[0];
+      collisions[1] = nextPosition[1] + offset[1] + start[1] - gameBoundary[1];
+      return collisions;
     }
 
-    return false; // no collision detected
+    return null; // no collision detected
   }
 }

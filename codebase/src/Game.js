@@ -19,6 +19,7 @@ var gameBoundary = [
   gameCanvas.foregroundLayer.width / blockSize,
   gameCanvas.foregroundLayer.height / blockSize
 ];
+var gameState = [];
 
 // * Root scoped shape variables
 var currentShape; // holds the shape being controlled
@@ -32,6 +33,13 @@ var shapeIndex = 0; // indexes the shapeList
 export function init(container) {
   container.appendChild(gameCanvas.backgroundLayer);
   container.appendChild(gameCanvas.foregroundLayer);
+
+  // set up the game state array
+  for (let y = 0; y < gameBoundary[1]; y++) {
+    for (let x = 0; x < gameBoundary[0]; x++) {
+      gameState[y][x] = 0;
+    }
+  }
 
   currentShape = createTetromino(
     shapeList[shapeIndex],
@@ -72,6 +80,31 @@ export function run(timestamp) {
   window.requestAnimationFrame(run);
 }
 
+function lockBlockInPlace() {
+  shapeIndex = shapeIndex < shapeList.length - 1 ? shapeIndex + 1 : 0;
+  currentShape = createTetromino(
+    shapeList[shapeIndex],
+    gameCanvas.foregroundLayer.getContext('2d'),
+    blockSize
+  );
+  currentShape.draw();
+}
+
+function updateGameState() {
+  let { rowLengths, rowOffset, columnLengths, columnOffset } = currentShape.calculateLengthMatrix(); // height at each local x value of the shape
+
+  console.log(rowLengths, rowOffset, columnLengths, columnOffset);
+
+  // * Loop over the current shape block positions and flag them in the gamestate
+  for (let y = currentShape.yPos; y < rowLengths.length; y++) {
+    for (let x = currentShape.xPos; x < columnLengths.length; x++) {
+      console.log(x, y);
+    }
+  }
+
+  lockBlockInPlace(); // leave the block where it is draw and create a new one
+}
+
 /**
  * * Helper function to swap a game piece during play.
  */
@@ -94,13 +127,7 @@ function handleGravity() {
   let shapeAtBottom = currentShape.moveDown(gameBoundary);
 
   if (shapeAtBottom) {
-    shapeIndex = shapeIndex < shapeList.length - 1 ? shapeIndex + 1 : 0;
-    currentShape = createTetromino(
-      shapeList[shapeIndex],
-      gameCanvas.foregroundLayer.getContext('2d'),
-      blockSize
-    );
-    currentShape.draw();
+    updateGameState();
   }
 }
 

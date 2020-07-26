@@ -1,3 +1,5 @@
+import {zeros} from '../../utils/array';
+
 export default class Block {
   constructor(context, blockSize, color) {
     this.context = context; // canvas context for drawing onto
@@ -143,9 +145,6 @@ export default class Block {
       if (collision[0] > 0) {
         this.moveTo(this.xPos - collision[0], this.yPos);
       }
-      // if (collision[1] > 0) {
-      //   this.moveTo(this.xPos, this.yPos - collision[1]);
-      // }
     }
     this.draw(); // draw the shape at the new position in the matrix
   }
@@ -199,30 +198,39 @@ export default class Block {
 
   calculateLengthMatrix() {
     var shape = this.shapeMatrix[this.rotationIndex];
-    var rowLengths = [];
-    var columnLengths = [];
+    var rowOffset = zeros(shape.length);
+    var rowLengths = zeros(shape.length);
+    var columnOffset = zeros(shape[0].length);
+    var columnLengths = zeros(shape[0].length);
 
-    // * Initialize the length arrays
+    // * A nested loop to determine the length of each row in the shape matrix
     for (let y = 0; y < shape.length; y++) {
-      columnLengths[y] = 0;
-    }
-    for (let x = 0; x < shape[0].length; x++) {
-      rowLengths[x] = 0;
-    }
-
-    // * A nested loop to determine the length of the shape matrix at each local origin.
-    for (let y = 0; y < shape.length; y++) {
-      console.log(shape[y]);
       for (let x = 0; x < shape[y].length; x++) {
-        console.log(shape[y][x]);
-        // console.log(x, y);
         if (shape[y][x]) {
+          rowLengths[y] += 1;
+          columnLengths[x] += 1;
           console.log(`block found at ${x}, ${y}`);
+        } else {
+          if (rowLengths[y] === 0) {
+            rowOffset[y] += 1;
+          } 
+          if (columnLengths[x] === 0) {
+            columnOffset[x] += 1;
+          }
         }
       }
     }
 
-    console.log(rowLengths, columnLengths);
+    for (let i = 0; i < shape.length; i++) {
+      if (rowOffset[i] === shape.length) {
+        rowOffset[i] = 0;
+      }
+      if (columnOffset[i] === shape.length) {
+        columnOffset[i] = 0;
+      }
+    }
+
+    return { rowLengths, rowOffset, columnLengths, columnOffset };
   }
 
   /**
@@ -254,5 +262,15 @@ export default class Block {
     }
 
     return null; // no collision detected
+  }
+
+  detectGamePieceCollision(gameState, nextPosition) {
+    // * Calculate the exact block size and dimensions of the shape
+    var { rowLengths, columnLengths } = this.calculateLengthMatrix();
+    var collisions = [];
+    // var xAxisPos = nextPosition[0];
+    // var yAxisPos = nextPosition[1];
+
+    console.log(rowLengths, columnLengths, collisions, gameState, nextPosition);
   }
 }

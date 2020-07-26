@@ -3,11 +3,12 @@ import createTetromino from './components/GameBlock/BlockFactory';
 import KeyHandler from './components/GameInput/KeyHandler';
 
 // * Root scoped animation variables
-var xAxisTimestamp = 0;
-var xAxisSpeed = 0.06;
-var yAxisTimestamp = 0;
-var yAxisSpeed = 0.5;
-// var fps;
+var movementTimestamp = 0;
+var movementSpeed = 0.06;
+var rotationTimestamp = 0;
+var rotationSpeed = 0.08;
+var gravityTimestamp = 0;
+var gravity = 0.5;
 
 // * Root scoped game variables
 var keyHandler = new KeyHandler();
@@ -24,6 +25,10 @@ var currentShape; // holds the shape being controlled
 var shapeList = ['L', 'I', 'S', 'Z', 'T', 'J', 'O']; // a list of all shape characters for creating blocks
 var shapeIndex = 0; // indexes the shapeList
 
+/**
+ * * Sets up the game canvas and initializes a shape, starts the animation.
+ * @param {HTMLElement} container | Container element to append canvas to
+ */
 export function init(container) {
   container.appendChild(gameCanvas.backgroundLayer);
   container.appendChild(gameCanvas.foregroundLayer);
@@ -39,23 +44,37 @@ export function init(container) {
   window.requestAnimationFrame(run);
 }
 
+/**
+ * * The game loop, handle input and game logic using delta time values.
+ * @param {number} timestamp | Animation frame callback parameter, used to calculate time values for animation
+ */
 export function run(timestamp) {
   // * Calculate the number of seconds passed since the last frame
-  let secondsPassedSinceX = (timestamp - xAxisTimestamp) / 1000;
-  let secondsPassedSinceY = (timestamp - yAxisTimestamp) / 1000;
+  let secondsSinceMovement = (timestamp - movementTimestamp) / 1000;
+  let secondsSinceRotation = (timestamp - rotationTimestamp) / 1000;
+  let secondsSinceGravity = (timestamp - gravityTimestamp) / 1000;
 
-  if (secondsPassedSinceX > xAxisSpeed) {
-    xAxisTimestamp = timestamp;
-    handleInput();
+  if (secondsSinceMovement > movementSpeed) {
+    movementTimestamp = timestamp;
+    handleMovement();
   }
-  if (secondsPassedSinceY > yAxisSpeed) {
-    yAxisTimestamp = timestamp;
-    handleDrop();
+
+  if (secondsSinceRotation > rotationSpeed) {
+    rotationTimestamp = timestamp;
+    handleRotation();
+  }
+
+  if (secondsSinceGravity > gravity) {
+    gravityTimestamp = timestamp;
+    handleGravity();
   }
 
   window.requestAnimationFrame(run);
 }
 
+/**
+ * * Helper function to swap a game piece during play.
+ */
 function swapPieces() {
   currentShape.clear();
   shapeIndex = shapeIndex < shapeList.length - 1 ? shapeIndex + 1 : 0;
@@ -67,7 +86,11 @@ function swapPieces() {
   currentShape.draw();
 }
 
-function handleDrop() {
+/**
+ * * Helper function to move a game piece downwards at each gravity interval.
+ * * Also handles piece swapping when the current piece hits y-axis collision.
+ */
+function handleGravity() {
   let shapeAtBottom = currentShape.moveDown(gameBoundary);
 
   if (shapeAtBottom) {
@@ -81,14 +104,26 @@ function handleDrop() {
   }
 }
 
-function handleInput() {
+/**
+ * * Helper function to handle movement based inputs. (left and right)
+ */
+function handleMovement() {
   if (keyHandler.isDown(keyHandler.SPACE)) swapPieces();
-  if (keyHandler.isDown(keyHandler.UP)) currentShape.rotate(gameBoundary);
   if (keyHandler.isDown(keyHandler.LEFT)) currentShape.moveLeft(gameBoundary);
-  if (keyHandler.isDown(keyHandler.DOWN)) handleDrop();
+  if (keyHandler.isDown(keyHandler.DOWN)) handleGravity();
   if (keyHandler.isDown(keyHandler.RIGHT)) currentShape.moveRight(gameBoundary);
 }
 
+/**
+ * * Helper function to handle rotation inputs.
+ */
+function handleRotation() {
+  if (keyHandler.isDown(keyHandler.UP)) currentShape.rotate(gameBoundary);
+}
+
+/**
+ * * Using our KeyHandler class add event listeners to the document.
+ */
 function setKeyboardListeners() {
   document.addEventListener('keyup', (event) => {
     keyHandler.onKeyUp(event);

@@ -143,9 +143,9 @@ export default class Block {
       if (collision[0] > 0) {
         this.moveTo(this.xPos - collision[0], this.yPos);
       }
-      if (collision[1] > 0) {
-        this.moveTo(this.xPos, this.yPos - collision[1]);
-      }
+      // if (collision[1] > 0) {
+      //   this.moveTo(this.xPos, this.yPos - collision[1]);
+      // }
     }
     this.draw(); // draw the shape at the new position in the matrix
   }

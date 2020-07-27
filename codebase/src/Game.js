@@ -1,6 +1,7 @@
 import GameCanvas from './components/GameCanvas/GameCanvas';
 import createTetromino from './components/GameBlock/BlockFactory';
 import KeyHandler from './components/GameInput/KeyHandler';
+import { shuffle } from './utils/array';
 
 // * Root scoped animation variables
 var movementTimestamp = 0;
@@ -34,13 +35,18 @@ export function init(container) {
   container.appendChild(gameCanvas.backgroundLayer);
   container.appendChild(gameCanvas.foregroundLayer);
 
-  // set up the game state array
+  // * Shuffle the shape list
+  shuffle(shapeList);
+
+  // * Set up the game state array
   for (let y = 0; y < gameBoundary[1]; y++) {
+    gameState[y] = [];
     for (let x = 0; x < gameBoundary[0]; x++) {
       gameState[y][x] = 0;
     }
   }
 
+  // * Set up our first shape
   currentShape = createTetromino(
     shapeList[shapeIndex],
     gameCanvas.foregroundLayer.getContext('2d'),
@@ -80,8 +86,16 @@ export function run(timestamp) {
   window.requestAnimationFrame(run);
 }
 
-function lockBlockInPlace() {
-  shapeIndex = shapeIndex < shapeList.length - 1 ? shapeIndex + 1 : 0;
+function generateNextBlock() {
+  // * Check if we have run out of shapes in the permutation, reshuffle and reset indices
+  if (shapeIndex === shapeList.length - 1) {
+    shuffle(shapeList);
+    shapeIndex = 0;
+  }
+  else {
+    shapeIndex += 1;
+  }
+
   currentShape = createTetromino(
     shapeList[shapeIndex],
     gameCanvas.foregroundLayer.getContext('2d'),
@@ -91,32 +105,34 @@ function lockBlockInPlace() {
 }
 
 function updateGameState() {
-  let { rowLengths, rowOffset, columnLengths, columnOffset } = currentShape.calculateLengthMatrix(); // height at each local x value of the shape
+  let {
+    rowLengths,
+    rowOffset,
+    columnLengths,
+    columnOffset
+  } = currentShape.calculateLengthMatrix(); // height at each local x value of the shape
+  let shape = currentShape.getCurrentShapeMatrix();
 
   console.log(rowLengths, rowOffset, columnLengths, columnOffset);
 
   // * Loop over the current shape block positions and flag them in the gamestate
-  for (let y = currentShape.yPos; y < rowLengths.length; y++) {
-    for (let x = currentShape.xPos; x < columnLengths.length; x++) {
-      console.log(x, y);
+  for (let y = currentShape.yPos; y < rowLengths.length + currentShape.yPos; y++) {
+    for (let x = currentShape.xPos; x < columnLengths.length + currentShape.xPos; x++) {
+      if (shape[y - currentShape.yPos][x - currentShape.xPos]) {
+        gameState[y][x] = 1;
+      }
     }
   }
 
-  lockBlockInPlace(); // leave the block where it is draw and create a new one
+  generateNextBlock(); // leave the block where it is draw and create a new one
 }
 
 /**
  * * Helper function to swap a game piece during play.
  */
-function swapPieces() {
+function swapBlocks() {
   currentShape.clear();
-  shapeIndex = shapeIndex < shapeList.length - 1 ? shapeIndex + 1 : 0;
-  currentShape = createTetromino(
-    shapeList[shapeIndex],
-    gameCanvas.foregroundLayer.getContext('2d'),
-    blockSize
-  );
-  currentShape.draw();
+  generateNextBlock();
 }
 
 /**
@@ -135,7 +151,7 @@ function handleGravity() {
  * * Helper function to handle movement based inputs. (left and right)
  */
 function handleMovement() {
-  if (keyHandler.isDown(keyHandler.SPACE)) swapPieces();
+  if (keyHandler.isDown(keyHandler.SPACE)) swapBlocks();
   if (keyHandler.isDown(keyHandler.LEFT)) currentShape.moveLeft(gameBoundary);
   if (keyHandler.isDown(keyHandler.DOWN)) handleGravity();
   if (keyHandler.isDown(keyHandler.RIGHT)) currentShape.moveRight(gameBoundary);

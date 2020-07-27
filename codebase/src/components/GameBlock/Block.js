@@ -10,6 +10,15 @@ export default class Block {
     this.rotationIndex = 0; // index in the rotation matrix
   }
 
+  // #################  Helper functions ############### //
+
+  /**
+   * * Returns the current shape matrix at the current rotation
+   */
+  getCurrentShapeMatrix() {
+    return this.shapeMatrix[this.rotationIndex];
+  }
+
   // ################ Drawing functions ################ //
 
   /**
@@ -43,7 +52,7 @@ export default class Block {
    * * Draw the current shape in the canvas, using combinations of squares.
    */
   draw() {
-    var shape = this.shapeMatrix[this.rotationIndex]; // takes the current rotation of our shape
+    var shape = this.getCurrentShapeMatrix(); // takes the current rotation of our shape
 
     // * Loop over the x and y axis in the shape matrix, drawing a block in a position marked with a 1
     for (let y = 0; y < shape.length; y++) {
@@ -64,7 +73,7 @@ export default class Block {
    * * Clear the current shape from the canvas.
    */
   clear() {
-    var shape = this.shapeMatrix[this.rotationIndex];
+    var shape = this.getCurrentShapeMatrix();
 
     // * Loop over the x and y axis in the shape matrix, clearing all of the blocks marked with a 1
     for (let y = 0; y < shape.length; y++) {
@@ -155,7 +164,7 @@ export default class Block {
    * * Calculates the basic hitbox for a shape, max of x,y footprint.
    */
   calculateHitbox() {
-    var shape = this.shapeMatrix[this.rotationIndex];
+    var shape = this.getCurrentShapeMatrix();
     var start = []; // starting x, y coordinates of the shape, the top left most block
     var end = []; // ending x, y coordinates of the shape, the bottom right most block
 
@@ -197,7 +206,7 @@ export default class Block {
   }
 
   calculateLengthMatrix() {
-    var shape = this.shapeMatrix[this.rotationIndex];
+    var shape = this.getCurrentShapeMatrix();
     var rowOffset = zeros(shape.length);
     var rowLengths = zeros(shape.length);
     var columnOffset = zeros(shape[0].length);

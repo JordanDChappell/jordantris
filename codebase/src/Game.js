@@ -1,7 +1,7 @@
 import GameCanvas from './components/GameCanvas/GameCanvas';
 import createTetromino from './components/GameBlock/BlockFactory';
 import KeyHandler from './components/GameInput/KeyHandler';
-import { shuffle } from './utils/array';
+import { zeros, shuffle } from './utils/array';
 
 // * Root scoped animation variables
 var movementTimestamp = 0;
@@ -107,6 +107,30 @@ function generateNextBlock() {
   currentShape.draw();
 }
 
+function clearRow(y) {
+  gameCanvas.clearRow(y);  // clear the canvas
+
+  // * Zero out the current row
+  gameState[y] = zeros(gameState[y].length);
+
+  // * Update the game state to push everything down 1 block
+  for (let i = y; i >= 0; i--) {
+    gameState[i] = gameState[i - 1];
+    gameCanvas.clearRow(i);
+    gameCanvas.drawRow(i, gameState[i]);
+  }
+}
+
+function checkForRowClear() {
+  for (let y = 0; y < gameState.length; y++) {
+    if (gameState[y].every(column => {
+      return column;
+    })) {
+      clearRow(y);
+    }
+  }
+}
+
 function updateGameState() {
   let shape = currentShape.getCurrentShapeMatrix();
 
@@ -114,11 +138,12 @@ function updateGameState() {
   for (let y = currentShape.yPos; y < shape.length + currentShape.yPos; y++) {
     for (let x = currentShape.xPos; x < shape[0].length + currentShape.xPos; x++) {
       if (shape[y - currentShape.yPos][x - currentShape.xPos]) {
-        gameState[y][x] = 1;
+        gameState[y][x] = currentShape.color;
       }
     }
   }
-
+  
+  checkForRowClear();
   generateNextBlock(); // leave the block where it is draw and create a new one
 }
 

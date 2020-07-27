@@ -103,42 +103,63 @@ export default class Block {
     this.draw();
   }
 
+  /**
+   * * Helper function to move the current block left in the canvas, handles collisions.
+   * @param {array} gameBoundary | Two block length numbers in an array, x and y axis max values
+   * @param {array} gameState | Multidimensional array of the current game state (1s where blocks are sitting)
+   */
   moveLeft(gameBoundary, gameState) {
-    let xpos = this.xPos - 1;
-    let ypos = this.yPos;
-    let boundaryCollision = this.detectBoundaryCollision(gameBoundary, [xpos, ypos]);
+    let xpos = this.xPos - 1; // left in the x-axis is a negative direction
+    let ypos = this.yPos; // no movement in the y-axis
 
+    // * Try to detect collisions, first with the boundary of the game canvas
+    let boundaryCollision = this.detectBoundaryCollision(gameBoundary, [xpos, ypos]);
     if (boundaryCollision === null) {
-      let stackCollision = this.detectGamePieceCollision(gameState, [xpos, ypos]);
+      // * Wait until after the boundary checking to check the game stack
+      let stackCollision = this.detectGameStackCollision(gameState, [xpos, ypos]);
       if (!stackCollision) {
         this.moveTo(xpos, ypos);
       }
     }
   }
 
+  /**
+   * * Helper function to move the current block right in the canvas, handles collisions.
+   * @param {array} gameBoundary | Two block length numbers in an array, x and y axis max values
+   * @param {array} gameState | Multidimensional array of the current game state (1s where blocks are sitting)
+   */
   moveRight(gameBoundary, gameState) {
-    let xpos = this.xPos + 1;
-    let ypos = this.yPos;
-    let boundaryCollision = this.detectBoundaryCollision(gameBoundary, [xpos, ypos]);
+    let xpos = this.xPos + 1; // left in the x-axis is a positive direction
+    let ypos = this.yPos; // no movement in the y-axis
 
+    // * Try to detect collisions, first with the boundary of the game canvas
+    let boundaryCollision = this.detectBoundaryCollision(gameBoundary, [xpos, ypos]);
     if (boundaryCollision === null) {
-      let stackCollision = this.detectGamePieceCollision(gameState, [xpos, ypos]);
+      // * Wait until after the boundary checking to check the game stack
+      let stackCollision = this.detectGameStackCollision(gameState, [xpos, ypos]);
       if (!stackCollision) {
         this.moveTo(xpos, ypos);
       }
     }
   }
 
+  /**
+   * * Helper function to move the current block down in the canvas, handles collisions.
+   * @param {array} gameBoundary | Two block length numbers in an array, x and y axis max values
+   * @param {array} gameState | Multidimensional array of the current game state (1s where blocks are sitting)
+   */
   moveDown(gameBoundary, gameState) {
-    let xpos = this.xPos;
-    let ypos = this.yPos + 1;
-    let boundaryCollision = this.detectBoundaryCollision(gameBoundary, [xpos, ypos]);
+    let xpos = this.xPos; // no x-axis movement
+    let ypos = this.yPos + 1; // positive y-axis movement is downwards
 
+    // * Try to detect collisions, first with the boundary of the game canvas
+    let boundaryCollision = this.detectBoundaryCollision(gameBoundary, [xpos, ypos]);
     if (boundaryCollision === null) {
-      let stackCollision = this.detectGamePieceCollision(gameState, [xpos, ypos]);
+      // * Wait until after the boundary checking to check the game stack
+      let stackCollision = this.detectGameStackCollision(gameState, [xpos, ypos]);
       if (!stackCollision) {
         this.moveTo(xpos, ypos);
-        return false;
+        return false; // move the shape and then return false, return is used to spawn a new piece
       }
     }
 
@@ -170,11 +191,11 @@ export default class Block {
       }
     } 
     else {
-      let gamePieceCollision = this.detectGamePieceCollision(gameState, [this.xPos, this.yPos]);
+      let gameStackCollision = this.detectGameStackCollision(gameState, [this.xPos, this.yPos]);
 
       // * If there are game piece collisions, don't rotate (yet);
-      // TODO: Fix this so that a game piece collision also bumps the current shape into a valid position
-      if (gamePieceCollision) {
+      // TODO: Fix this so that a game piece collision also bumps the current shape into a valid position?
+      if (gameStackCollision) {
         this.rotationIndex =
         this.rotationIndex === 0
           ? this.shapeMatrix.length - 1
@@ -305,7 +326,7 @@ export default class Block {
    * @param {array} gameState | Array containing the stack state
    * @param {array} nextPosition | possible next position of the shape, used to determine if the shape would move out of the boundary
    */
-  detectGamePieceCollision(gameState, nextPosition) {
+  detectGameStackCollision(gameState, nextPosition) {
     // * Calculate the exact block size and dimensions of the shape
     var shape = this.getCurrentShapeMatrix();
     // var { rowLengths, columnLengths } = this.calculateLengthMatrix();

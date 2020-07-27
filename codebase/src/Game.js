@@ -86,6 +86,9 @@ export function run(timestamp) {
   window.requestAnimationFrame(run);
 }
 
+/**
+ * * Helper function to select the next block and generate it.
+ */
 function generateNextBlock() {
   // * Check if we have run out of shapes in the permutation, reshuffle and reset indices
   if (shapeIndex === shapeList.length - 1) {

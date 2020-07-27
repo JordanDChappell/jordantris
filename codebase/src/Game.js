@@ -25,7 +25,7 @@ var gameState = [];
 // * Root scoped shape variables
 var currentShape; // holds the shape being controlled
 var shapeList = ['L', 'I', 'S', 'Z', 'T', 'J', 'O']; // a list of all shape characters for creating blocks
-var shapeIndex = 0; // indexes the shapeList
+var shapeIndex = 4; // indexes the shapeList
 
 /**
  * * Sets up the game canvas and initializes a shape, starts the animation.
@@ -35,9 +35,6 @@ export function init(container) {
   container.appendChild(gameCanvas.backgroundLayer);
   container.appendChild(gameCanvas.foregroundLayer);
 
-  // * Shuffle the shape list
-  shuffle(shapeList);
-
   // * Set up the game state array
   for (let y = 0; y < gameBoundary[1]; y++) {
     gameState[y] = [];
@@ -45,6 +42,9 @@ export function init(container) {
       gameState[y][x] = 0;
     }
   }
+
+  // * Shuffle the shape list
+  // shuffle(shapeList);
 
   // * Set up our first shape
   currentShape = createTetromino(
@@ -105,19 +105,11 @@ function generateNextBlock() {
 }
 
 function updateGameState() {
-  let {
-    rowLengths,
-    rowOffset,
-    columnLengths,
-    columnOffset
-  } = currentShape.calculateLengthMatrix(); // height at each local x value of the shape
   let shape = currentShape.getCurrentShapeMatrix();
 
-  console.log(rowLengths, rowOffset, columnLengths, columnOffset);
-
   // * Loop over the current shape block positions and flag them in the gamestate
-  for (let y = currentShape.yPos; y < rowLengths.length + currentShape.yPos; y++) {
-    for (let x = currentShape.xPos; x < columnLengths.length + currentShape.xPos; x++) {
+  for (let y = currentShape.yPos; y < shape.length + currentShape.yPos; y++) {
+    for (let x = currentShape.xPos; x < shape[0].length + currentShape.xPos; x++) {
       if (shape[y - currentShape.yPos][x - currentShape.xPos]) {
         gameState[y][x] = 1;
       }
@@ -140,7 +132,7 @@ function swapBlocks() {
  * * Also handles piece swapping when the current piece hits y-axis collision.
  */
 function handleGravity() {
-  let shapeAtBottom = currentShape.moveDown(gameBoundary);
+  let shapeAtBottom = currentShape.moveDown(gameBoundary, gameState);
 
   if (shapeAtBottom) {
     updateGameState();
@@ -152,16 +144,16 @@ function handleGravity() {
  */
 function handleMovement() {
   if (keyHandler.isDown(keyHandler.SPACE)) swapBlocks();
-  if (keyHandler.isDown(keyHandler.LEFT)) currentShape.moveLeft(gameBoundary);
+  if (keyHandler.isDown(keyHandler.LEFT)) currentShape.moveLeft(gameBoundary, gameState);
   if (keyHandler.isDown(keyHandler.DOWN)) handleGravity();
-  if (keyHandler.isDown(keyHandler.RIGHT)) currentShape.moveRight(gameBoundary);
+  if (keyHandler.isDown(keyHandler.RIGHT)) currentShape.moveRight(gameBoundary, gameState);
 }
 
 /**
  * * Helper function to handle rotation inputs.
  */
 function handleRotation() {
-  if (keyHandler.isDown(keyHandler.UP)) currentShape.rotate(gameBoundary);
+  if (keyHandler.isDown(keyHandler.UP)) currentShape.rotate(gameBoundary, gameState);
 }
 
 /**

@@ -13,7 +13,7 @@ export default class Block {
   // #################  Helper functions ############### //
 
   /**
-   * * Returns the current shape matrix at the current rotation
+   * * Returns the current shape matrix at the current rotation.
    */
   getCurrentShapeMatrix() {
     return this.shapeMatrix[this.rotationIndex];
@@ -103,39 +103,52 @@ export default class Block {
     this.draw();
   }
 
-  moveLeft(gameBoundary) {
+  moveLeft(gameBoundary, gameState) {
     let xpos = this.xPos - 1;
     let ypos = this.yPos;
+    let boundaryCollision = this.detectBoundaryCollision(gameBoundary, [xpos, ypos]);
 
-    if (this.detectBoundaryCollision(gameBoundary, [xpos, ypos]) === null) {
-      this.moveTo(xpos, ypos);
+    if (boundaryCollision === null) {
+      let stackCollision = this.detectGamePieceCollision(gameState, [xpos, ypos]);
+      if (!stackCollision) {
+        this.moveTo(xpos, ypos);
+      }
     }
   }
 
-  moveRight(gameBoundary) {
+  moveRight(gameBoundary, gameState) {
     let xpos = this.xPos + 1;
     let ypos = this.yPos;
+    let boundaryCollision = this.detectBoundaryCollision(gameBoundary, [xpos, ypos]);
 
-    if (this.detectBoundaryCollision(gameBoundary, [xpos, ypos]) === null) {
-      this.moveTo(xpos, ypos);
+    if (boundaryCollision === null) {
+      let stackCollision = this.detectGamePieceCollision(gameState, [xpos, ypos]);
+      if (!stackCollision) {
+        this.moveTo(xpos, ypos);
+      }
     }
   }
 
-  moveDown(gameBoundary) {
+  moveDown(gameBoundary, gameState) {
     let xpos = this.xPos;
     let ypos = this.yPos + 1;
+    let boundaryCollision = this.detectBoundaryCollision(gameBoundary, [xpos, ypos]);
 
-    if (this.detectBoundaryCollision(gameBoundary, [xpos, ypos]) === null) {
-      this.moveTo(xpos, ypos);
-      return false;
+    if (boundaryCollision === null) {
+      let stackCollision = this.detectGamePieceCollision(gameState, [xpos, ypos]);
+      if (!stackCollision) {
+        this.moveTo(xpos, ypos);
+        return false;
+      }
     }
+
     return true;
   }
 
   /**
    * * Helper function to clear a block and select a new rotation in the shape matrix.
    */
-  rotate(gameBoundary) {
+  rotate(gameBoundary, gameState) {
     this.clear(); // clear the shape before rotating, uses the current shape in the matrix to clear
     this.rotationIndex =
       this.rotationIndex < this.shapeMatrix.length - 1
@@ -143,18 +156,32 @@ export default class Block {
         : 0; // handle overflows for rotationIndex, only go to 90deg * 4 for a complete circle
 
     // * Detect collisions as a result of the rotation (when a shape rotates at it's current position it may overflow the boundary of the game)
-    let collision = this.detectBoundaryCollision(gameBoundary, [
+    let boundaryCollision = this.detectBoundaryCollision(gameBoundary, [
       this.xPos,
       this.yPos
     ]);
 
-    // * If there are collisions then we need to move the shape back into the playing field
-    if (collision !== null && collision.length > 0) {
+
+    // * If there are boundary collisions then we need to move the shape back into the playing field
+    if (boundaryCollision !== null && boundaryCollision.length > 0) {
       // * If collision coordinates are positive then a collision has been calculated for that axis
-      if (collision[0] > 0) {
-        this.moveTo(this.xPos - collision[0], this.yPos);
+      if (boundaryCollision[0] > 0 || boundaryCollision[0] < 0) {
+        this.moveTo(this.xPos - boundaryCollision[0], this.yPos);
+      }
+    } 
+    else {
+      let gamePieceCollision = this.detectGamePieceCollision(gameState, [this.xPos, this.yPos]);
+
+      // * If there are game piece collisions, don't rotate (yet);
+      // TODO: Fix this so that a game piece collision also bumps the current shape into a valid position
+      if (gamePieceCollision) {
+        this.rotationIndex =
+        this.rotationIndex === 0
+          ? this.shapeMatrix.length - 1
+          : this.rotationIndex - 1;
       }
     }
+
     this.draw(); // draw the shape at the new position in the matrix
   }
 
@@ -212,13 +239,12 @@ export default class Block {
     var columnOffset = zeros(shape[0].length);
     var columnLengths = zeros(shape[0].length);
 
-    // * A nested loop to determine the length of each row in the shape matrix
+    // * A nested loop to determine the length of each row and column in the shape matrix
     for (let y = 0; y < shape.length; y++) {
       for (let x = 0; x < shape[y].length; x++) {
         if (shape[y][x]) {
           rowLengths[y] += 1;
           columnLengths[x] += 1;
-          console.log(`block found at ${x}, ${y}`);
         } else {
           if (rowLengths[y] === 0) {
             rowOffset[y] += 1;
@@ -230,6 +256,7 @@ export default class Block {
       }
     }
 
+    // * Offsets that overflow the shape need to be reset
     for (let i = 0; i < shape.length; i++) {
       if (rowOffset[i] === shape.length) {
         rowOffset[i] = 0;
@@ -273,13 +300,29 @@ export default class Block {
     return null; // no collision detected
   }
 
+  /**
+   * * Detect a collision between the current block and the existing blocks in the game state.
+   * @param {array} gameState | Array containing the stack state
+   * @param {array} nextPosition | possible next position of the shape, used to determine if the shape would move out of the boundary
+   */
   detectGamePieceCollision(gameState, nextPosition) {
     // * Calculate the exact block size and dimensions of the shape
-    var { rowLengths, columnLengths } = this.calculateLengthMatrix();
-    var collisions = [];
-    // var xAxisPos = nextPosition[0];
-    // var yAxisPos = nextPosition[1];
+    var shape = this.getCurrentShapeMatrix();
+    // var { rowLengths, columnLengths } = this.calculateLengthMatrix();
+    // var collisions = [];
+    var xAxisPos = nextPosition[0];
+    var yAxisPos = nextPosition[1];
 
-    console.log(rowLengths, columnLengths, collisions, gameState, nextPosition);
+    // * We need to loop over the gamestate matrix starting from the nextPosition origin of the shape
+    // * we loop until the end of the shape matrix and compare where blocks overlap.
+    for (let y = yAxisPos; y < shape.length + yAxisPos; y++) {
+      for (let x = xAxisPos; x < shape[0].length + xAxisPos; x++) {
+        if (shape[y - yAxisPos][x - xAxisPos] && gameState[y][x]) {
+          return true;
+        }
+      }
+    }
+
+    return false;
   }
 }

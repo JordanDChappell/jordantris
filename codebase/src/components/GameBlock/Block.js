@@ -1,4 +1,4 @@
-import {zeros} from '../../utils/array';
+import { zeros } from '../../utils/array';
 
 export default class Block {
   constructor(context, blockSize, color) {
@@ -113,10 +113,16 @@ export default class Block {
     let ypos = this.yPos; // no movement in the y-axis
 
     // * Try to detect collisions, first with the boundary of the game canvas
-    let boundaryCollision = this.detectBoundaryCollision(gameBoundary, [xpos, ypos]);
+    let boundaryCollision = this.detectBoundaryCollision(gameBoundary, [
+      xpos,
+      ypos
+    ]);
     if (boundaryCollision === null) {
       // * Wait until after the boundary checking to check the game stack
-      let stackCollision = this.detectGameStackCollision(gameState, [xpos, ypos]);
+      let stackCollision = this.detectGameStackCollision(gameState, [
+        xpos,
+        ypos
+      ]);
       if (!stackCollision) {
         this.moveTo(xpos, ypos);
       }
@@ -133,10 +139,16 @@ export default class Block {
     let ypos = this.yPos; // no movement in the y-axis
 
     // * Try to detect collisions, first with the boundary of the game canvas
-    let boundaryCollision = this.detectBoundaryCollision(gameBoundary, [xpos, ypos]);
+    let boundaryCollision = this.detectBoundaryCollision(gameBoundary, [
+      xpos,
+      ypos
+    ]);
     if (boundaryCollision === null) {
       // * Wait until after the boundary checking to check the game stack
-      let stackCollision = this.detectGameStackCollision(gameState, [xpos, ypos]);
+      let stackCollision = this.detectGameStackCollision(gameState, [
+        xpos,
+        ypos
+      ]);
       if (!stackCollision) {
         this.moveTo(xpos, ypos);
       }
@@ -153,10 +165,16 @@ export default class Block {
     let ypos = this.yPos + 1; // positive y-axis movement is downwards
 
     // * Try to detect collisions, first with the boundary of the game canvas
-    let boundaryCollision = this.detectBoundaryCollision(gameBoundary, [xpos, ypos]);
+    let boundaryCollision = this.detectBoundaryCollision(gameBoundary, [
+      xpos,
+      ypos
+    ]);
     if (boundaryCollision === null) {
       // * Wait until after the boundary checking to check the game stack
-      let stackCollision = this.detectGameStackCollision(gameState, [xpos, ypos]);
+      let stackCollision = this.detectGameStackCollision(gameState, [
+        xpos,
+        ypos
+      ]);
       if (!stackCollision) {
         this.moveTo(xpos, ypos);
         return false; // move the shape and then return false, return is used to spawn a new piece
@@ -182,24 +200,25 @@ export default class Block {
       this.yPos
     ]);
 
-
     // * If there are boundary collisions then we need to move the shape back into the playing field
     if (boundaryCollision !== null && boundaryCollision.length > 0) {
       // * If collision coordinates are positive then a collision has been calculated for that axis
       if (boundaryCollision[0] > 0 || boundaryCollision[0] < 0) {
         this.moveTo(this.xPos - boundaryCollision[0], this.yPos);
       }
-    } 
-    else {
-      let gameStackCollision = this.detectGameStackCollision(gameState, [this.xPos, this.yPos]);
+    } else {
+      let gameStackCollision = this.detectGameStackCollision(gameState, [
+        this.xPos,
+        this.yPos
+      ]);
 
       // * If there are game piece collisions, don't rotate (yet);
       // TODO: Fix this so that a game piece collision also bumps the current shape into a valid position?
       if (gameStackCollision) {
         this.rotationIndex =
-        this.rotationIndex === 0
-          ? this.shapeMatrix.length - 1
-          : this.rotationIndex - 1;
+          this.rotationIndex === 0
+            ? this.shapeMatrix.length - 1
+            : this.rotationIndex - 1;
       }
     }
 
@@ -269,7 +288,7 @@ export default class Block {
         } else {
           if (rowLengths[y] === 0) {
             rowOffset[y] += 1;
-          } 
+          }
           if (columnLengths[x] === 0) {
             columnOffset[x] += 1;
           }

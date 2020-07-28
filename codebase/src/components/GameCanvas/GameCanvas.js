@@ -77,10 +77,10 @@ export default class GameCanvas {
   clearRow(yPos) {
     let context = this.foregroundLayer.getContext('2d');
     context.clearRect(
-      0,
-      yPos * this.gridSize,
-      this.foregroundLayer.width,
-      this.gridSize
+      0 - 1,
+      yPos * this.gridSize - 1,
+      this.foregroundLayer.width + 2,
+      this.gridSize + 2
     );
   }
 

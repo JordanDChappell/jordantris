@@ -94,8 +94,7 @@ function generateNextBlock() {
   if (shapeIndex === shapeList.length - 1) {
     shuffle(shapeList);
     shapeIndex = 0;
-  }
-  else {
+  } else {
     shapeIndex += 1;
   }
 
@@ -108,7 +107,7 @@ function generateNextBlock() {
 }
 
 function clearRow(y) {
-  gameCanvas.clearRow(y);  // clear the canvas
+  gameCanvas.clearRow(y); // clear the canvas
 
   // * Zero out the current row
   gameState[y] = zeros(gameState[y].length);
@@ -123,9 +122,11 @@ function clearRow(y) {
 
 function checkForRowClear() {
   for (let y = 0; y < gameState.length; y++) {
-    if (gameState[y].every(column => {
-      return column;
-    })) {
+    if (
+      gameState[y].every((column) => {
+        return column;
+      })
+    ) {
       clearRow(y);
     }
   }
@@ -136,13 +137,17 @@ function updateGameState() {
 
   // * Loop over the current shape block positions and flag them in the gamestate
   for (let y = currentShape.yPos; y < shape.length + currentShape.yPos; y++) {
-    for (let x = currentShape.xPos; x < shape[0].length + currentShape.xPos; x++) {
+    for (
+      let x = currentShape.xPos;
+      x < shape[0].length + currentShape.xPos;
+      x++
+    ) {
       if (shape[y - currentShape.yPos][x - currentShape.xPos]) {
         gameState[y][x] = currentShape.color;
       }
     }
   }
-  
+
   checkForRowClear();
   generateNextBlock(); // leave the block where it is draw and create a new one
 }
@@ -172,16 +177,19 @@ function handleGravity() {
  */
 function handleMovement() {
   if (keyHandler.isDown(keyHandler.SPACE)) swapBlocks();
-  if (keyHandler.isDown(keyHandler.LEFT)) currentShape.moveLeft(gameBoundary, gameState);
+  if (keyHandler.isDown(keyHandler.LEFT))
+    currentShape.moveLeft(gameBoundary, gameState);
   if (keyHandler.isDown(keyHandler.DOWN)) handleGravity();
-  if (keyHandler.isDown(keyHandler.RIGHT)) currentShape.moveRight(gameBoundary, gameState);
+  if (keyHandler.isDown(keyHandler.RIGHT))
+    currentShape.moveRight(gameBoundary, gameState);
 }
 
 /**
  * * Helper function to handle rotation inputs.
  */
 function handleRotation() {
-  if (keyHandler.isDown(keyHandler.UP)) currentShape.rotate(gameBoundary, gameState);
+  if (keyHandler.isDown(keyHandler.UP))
+    currentShape.rotate(gameBoundary, gameState);
 }
 
 /**

@@ -15,7 +15,7 @@ export default class GameCanvas {
   }
 
   /**
-   * * Initlize default parameters for a game canvas.
+   * * Initlize default parameters for a game canvas background layer.
    */
   initBackgroundLayer(height, width, padding) {
     // * Create the canvas element
@@ -51,6 +51,9 @@ export default class GameCanvas {
     this.backgroundLayer = canvas;
   }
 
+  /**
+   * * Initlize default parameters for a game canvas foreground layer.
+   */
   initForegroundLayer(height, width, padding) {
     // * Create the canvas element
     var canvas = document.createElement('canvas');
@@ -67,6 +70,10 @@ export default class GameCanvas {
     this.foregroundLayer = canvas;
   }
 
+  /**
+   * * Clear an entire row in the canvas grid.
+   * @param {number} yPos | Normalized y position of the row to clear
+   */
   clearRow(yPos) {
     let context = this.foregroundLayer.getContext('2d');
     context.clearRect(
@@ -77,6 +84,11 @@ export default class GameCanvas {
     );
   }
 
+  /**
+   * * Draw a row of blocks in the grid, if a color is available at the position in the row array.
+   * @param {number} yPos | Normalized y position of the row to draw
+   * @param {array} row | Array of colors to draw in each grid square on the row
+   */
   drawRow(yPos, row) {
     let context = this.foregroundLayer.getContext('2d');
     for (let i = 0; i < row.length; i++) {

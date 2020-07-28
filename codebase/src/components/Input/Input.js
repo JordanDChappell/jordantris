@@ -1,4 +1,4 @@
-import styles from "./Input.module.css";
+import styles from './Input.module.css';
 
 export default class Input {
   constructor(label, name) {
@@ -8,8 +8,8 @@ export default class Input {
 
   render() {
     return `
-      <label class="${styles["label"]}" for="${this.name}">${this.label}</label>
-      <input class="${styles["input"]}" type="text" id="${this.name}" name="${this.name}">
+      <label class="${styles['label']}" for="${this.name}">${this.label}</label>
+      <input class="${styles['input']}" type="text" id="${this.name}" name="${this.name}">
     `;
   }
 }

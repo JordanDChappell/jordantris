@@ -174,9 +174,12 @@ function swapBlocks() {
  * * Also handles piece swapping when the current piece hits y-axis collision.
  */
 function handleGravity() {
-  let shapeAtBottom = currentShape.moveDown(gameBoundary, gameState);
+  let shapeHasVerticalCollision = currentShape.moveDown(
+    gameBoundary,
+    gameState
+  );
 
-  if (shapeAtBottom) {
+  if (shapeHasVerticalCollision) {
     updateGameState();
   }
 }

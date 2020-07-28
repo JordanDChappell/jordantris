@@ -92,11 +92,13 @@ export default class GameCanvas {
   drawRow(yPos, row) {
     let context = this.foregroundLayer.getContext('2d');
     for (let i = 0; i < row.length; i++) {
-      let x = i * this.gridSize;
-      let y = yPos * this.gridSize;
-      context.fillStyle = row;
-      context.strokeRect(x, y, this.gridSize, this.gridSize); // draw the blocks outline
-      context.fillRect(x + 1, y + 1, this.gridSize - 2, this.gridSize - 2); // draw the blocks color, slightly smaller than the outline
+      if (row[i]) {
+        let x = i * this.gridSize;
+        let y = yPos * this.gridSize;
+        context.fillStyle = row[i];
+        context.strokeRect(x, y, this.gridSize, this.gridSize); // draw the blocks outline
+        context.fillRect(x + 1, y + 1, this.gridSize - 2, this.gridSize - 2); // draw the blocks color, slightly smaller than the outline
+      }
     }
   }
 }

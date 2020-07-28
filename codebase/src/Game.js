@@ -109,15 +109,24 @@ function generateNextBlock() {
 function clearRow(y) {
   gameCanvas.clearRow(y); // clear the canvas
 
-  // * Zero out the current row
-  gameState[y] = zeros(gameState[y].length);
+  var tempGameState = [...gameState];
 
   // * Update the game state to push everything down 1 block
-  for (let i = y; i >= 0; i--) {
-    gameState[i] = gameState[i - 1];
-    gameCanvas.clearRow(i);
-    gameCanvas.drawRow(i, gameState[i]);
+  for (let i = y; i > 0; i--) {
+    // * Determine if the game state is empty here and on the next line (skipping)
+    let blocksInCurrentRow = gameState[i].some((block) => {
+      return block;
+    });
+
+    if (blocksInCurrentRow) {
+      tempGameState[i] = gameState[i - 1].slice();
+      gameCanvas.clearRow(i);
+      gameCanvas.drawRow(i, tempGameState[i]);
+    }
   }
+
+  tempGameState[0] = zeros(gameState[0].length);
+  gameState = [...tempGameState];
 }
 
 function checkForRowClear() {

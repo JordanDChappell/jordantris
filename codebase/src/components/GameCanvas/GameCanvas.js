@@ -5,7 +5,7 @@ export default class GameCanvas {
     this.id = id;
     this.backgroundLayer = null;
     this.foregroundLayer = null;
-    this.height = 480;
+    this.height = 504;
     this.width = 412;
     this.padding = 50;
     this.gridSize = gridSize;
@@ -33,16 +33,16 @@ export default class GameCanvas {
 
     // draw the game boundary
     context.strokeStyle = '#000000';
-    context.strokeRect(padding, 0, width - padding * 2, height);
+    context.strokeRect(padding, this.gridSize, width - padding * 2, height - this.gridSize);
 
     // draw the game grid
     context.strokeStyle = 'rgba(0, 0, 0, 0.5)';
     context.beginPath();
-    for (let i = this.gridSize + padding; i < width - padding; i += 24) {
-      context.moveTo(i, 0);
+    for (let i = this.gridSize + padding; i < width - padding; i += this.gridSize) {
+      context.moveTo(i, this.gridSize);
       context.lineTo(i, this.height);
     }
-    for (let i = this.gridSize; i < height; i += 24) {
+    for (let i = this.gridSize * 2; i < height; i += this.gridSize) {
       context.moveTo(padding, i);
       context.lineTo(this.width - padding, i);
     }
@@ -68,6 +68,14 @@ export default class GameCanvas {
     canvas.width = width - padding * 2;
 
     this.foregroundLayer = canvas;
+  }
+
+  /**
+   * * Helper function to clear the entire foreground canvas.
+   */
+  clearForegroundLayer() {
+    let context = this.foregroundLayer.getContext("2d");
+    context.clearRect(0, 0, this.foregroundLayer.width, this.foregroundLayer.height);
   }
 
   /**

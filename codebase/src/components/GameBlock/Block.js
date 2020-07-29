@@ -1,13 +1,14 @@
-import { zeros } from '../../utils/array';
-
 export default class Block {
   constructor(context, blockSize, color) {
     this.context = context; // canvas context for drawing onto
     this.blockSize = blockSize; // block size in pixels of each block that makes up the shape
     this.color = color; // hex color of the filled blocks
-    this.xPos = 0; // x position normalized the block size (0 = 0, 1 = this.blockSize, 2 = this.blockSize * 2)
-    this.yPos = 0; // normalized y position
     this.rotationIndex = 0; // index in the rotation matrix
+
+    // * Calculate x and y starting position (y is 0, duh)
+    let halfWidthInBlocks = Math.floor(context.canvas.width / 2 / blockSize);
+    this.xPos = halfWidthInBlocks - 1; // x position normalized the block size (0 = 0, 1 = this.blockSize, 2 = this.blockSize * 2)
+    this.yPos = 0; // normalized y position
   }
 
   // #################  Helper functions ############### //
@@ -28,9 +29,16 @@ export default class Block {
    * @param {number} y | y-axis local coordinate to draw a block from
    */
   drawBlock(x, y) {
-    this.context.fillStyle = this.color;
-    this.context.strokeRect(x, y, this.blockSize, this.blockSize); // draw the blocks outline
-    this.context.fillRect(x + 1, y + 1, this.blockSize - 2, this.blockSize - 2); // draw the blocks color, slightly smaller than the outline
+    if (y > 0) {
+      this.context.fillStyle = this.color;
+      this.context.strokeRect(x, y, this.blockSize, this.blockSize); // draw the blocks outline
+      this.context.fillRect(
+        x + 1,
+        y + 1,
+        this.blockSize - 2,
+        this.blockSize - 2
+      ); // draw the blocks color, slightly smaller than the outline
+    }
   }
 
   /**
@@ -272,43 +280,6 @@ export default class Block {
     return { start, offset };
   }
 
-  calculateLengthMatrix() {
-    var shape = this.getCurrentShapeMatrix();
-    var rowOffset = zeros(shape.length);
-    var rowLengths = zeros(shape.length);
-    var columnOffset = zeros(shape[0].length);
-    var columnLengths = zeros(shape[0].length);
-
-    // * A nested loop to determine the length of each row and column in the shape matrix
-    for (let y = 0; y < shape.length; y++) {
-      for (let x = 0; x < shape[y].length; x++) {
-        if (shape[y][x]) {
-          rowLengths[y] += 1;
-          columnLengths[x] += 1;
-        } else {
-          if (rowLengths[y] === 0) {
-            rowOffset[y] += 1;
-          }
-          if (columnLengths[x] === 0) {
-            columnOffset[x] += 1;
-          }
-        }
-      }
-    }
-
-    // * Offsets that overflow the shape need to be reset
-    for (let i = 0; i < shape.length; i++) {
-      if (rowOffset[i] === shape.length) {
-        rowOffset[i] = 0;
-      }
-      if (columnOffset[i] === shape.length) {
-        columnOffset[i] = 0;
-      }
-    }
-
-    return { rowLengths, rowOffset, columnLengths, columnOffset };
-  }
-
   /**
    * * Detect collisions on the x, y boundaries of the canvas, return a collision array of numbers.
    * @param {array} gameBoundary | x, y lengths of the game boundary
@@ -348,8 +319,6 @@ export default class Block {
   detectGameStackCollision(gameState, nextPosition) {
     // * Calculate the exact block size and dimensions of the shape
     var shape = this.getCurrentShapeMatrix();
-    // var { rowLengths, columnLengths } = this.calculateLengthMatrix();
-    // var collisions = [];
     var xAxisPos = nextPosition[0];
     var yAxisPos = nextPosition[1];
 

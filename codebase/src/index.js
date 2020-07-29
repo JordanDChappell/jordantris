@@ -1,4 +1,4 @@
-import { init } from './game';
+import { init, start } from './game';
 
 import './styles/global/main.global.css';
 
@@ -14,3 +14,4 @@ function component() {
 document.body.appendChild(component());
 
 init(document.getElementById(containerId));
+start();

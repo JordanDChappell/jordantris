@@ -4,16 +4,16 @@ import KeyHandler from './components/GameInput/KeyHandler';
 import { zeros, shuffle } from './utils/array';
 
 // * Root scoped animation variables
-var movementTimestamp = 0;
-var movementSpeed = 0.06;
-var rotationTimestamp = 0;
-var rotationSpeed = 0.08;
-var gravityTimestamp = 0;
-var gravity = 0.5;
+const movementSpeed = 0.06;
+const rotationSpeed = 0.08;
+var gravity;
+var movementTimestamp;
+var rotationTimestamp;
+var gravityTimestamp;
 
 // * Root scoped game variables
-var keyHandler = new KeyHandler();
 const blockSize = 24;
+var keyHandler = new KeyHandler();
 var gameCanvas = new GameCanvas('jordantris-canvas', blockSize); // create a game canvas object, with foreground / background
 var gameBoundary = [
   // calculate the game boundary size in block rather than pixels
@@ -21,20 +21,35 @@ var gameBoundary = [
   gameCanvas.foregroundLayer.height / blockSize
 ];
 var gameState = [];
+var rowsCleared;
+var gameStopped;
 
 // * Root scoped shape variables
 var currentShape; // holds the shape being controlled
 var shapeList = ['L', 'I', 'S', 'Z', 'T', 'J', 'O']; // a list of all shape characters for creating blocks
-var shapeIndex = 4; // indexes the shapeList
+var shapeIndex; // indexes the shapeList
 
 /**
  * * Sets up the game canvas and initializes a shape, starts the animation.
  * @param {HTMLElement} container | Container element to append canvas to
  */
 export function init(container) {
+  // * Initialize variables
+  gravity = 0.5
+  movementTimestamp = 0;
+  rotationTimestamp = 0;
+  gravityTimestamp = 0;
+  rowsCleared = 0;
+  gameStopped = false;
+  shapeIndex = 0;
+
+  // * Initialize game objects
   container.appendChild(gameCanvas.backgroundLayer);
   container.appendChild(gameCanvas.foregroundLayer);
+  setKeyboardListeners();
+}
 
+export function start() {
   // * Set up the game state array
   for (let y = 0; y < gameBoundary[1]; y++) {
     gameState[y] = [];
@@ -44,7 +59,7 @@ export function init(container) {
   }
 
   // * Shuffle the shape list
-  // shuffle(shapeList);
+  shuffle(shapeList);
 
   // * Set up our first shape
   currentShape = createTetromino(
@@ -54,7 +69,6 @@ export function init(container) {
   );
   currentShape.draw();
 
-  setKeyboardListeners();
   window.requestAnimationFrame(run);
 }
 
@@ -63,27 +77,38 @@ export function init(container) {
  * @param {number} timestamp | Animation frame callback parameter, used to calculate time values for animation
  */
 export function run(timestamp) {
-  // * Calculate the number of seconds passed since the last frame
-  let secondsSinceMovement = (timestamp - movementTimestamp) / 1000;
-  let secondsSinceRotation = (timestamp - rotationTimestamp) / 1000;
-  let secondsSinceGravity = (timestamp - gravityTimestamp) / 1000;
+  if (!gameStopped) {
+    // * Calculate the number of seconds passed since the last frame
+    let secondsSinceMovement = (timestamp - movementTimestamp) / 1000;
+    let secondsSinceRotation = (timestamp - rotationTimestamp) / 1000;
+    let secondsSinceGravity = (timestamp - gravityTimestamp) / 1000;
 
-  if (secondsSinceMovement > movementSpeed) {
-    movementTimestamp = timestamp;
-    handleMovement();
+    if (secondsSinceMovement > movementSpeed) {
+      movementTimestamp = timestamp;
+      handleMovement();
+    }
+
+    if (secondsSinceRotation > rotationSpeed) {
+      rotationTimestamp = timestamp;
+      handleRotation();
+    }
+
+    if (secondsSinceGravity > gravity) {
+      gravityTimestamp = timestamp;
+      handleGravity();
+    }
+
+    window.requestAnimationFrame(run);
   }
+}
 
-  if (secondsSinceRotation > rotationSpeed) {
-    rotationTimestamp = timestamp;
-    handleRotation();
-  }
-
-  if (secondsSinceGravity > gravity) {
-    gravityTimestamp = timestamp;
-    handleGravity();
-  }
-
-  window.requestAnimationFrame(run);
+/**
+ * * Function to end the game after a loss.
+ */
+function gameOver() {
+  gameStopped = true;
+  alert(`You managed to clear ${rowsCleared} rows!`);
+  gameCanvas.clearForegroundLayer();
 }
 
 /**
@@ -106,8 +131,13 @@ function generateNextBlock() {
   currentShape.draw();
 }
 
+/**
+ * * Clears a row in the gamecanvas and game state, handles squashing the stack downwards.
+ * @param {number} y | Row to clear (in blocks from top of canvas)
+ */
 function clearRow(y) {
-  gameCanvas.clearRow(y); // clear the canvas
+  rowsCleared += 1; // increment the number of cleared rows
+  gameCanvas.clearRow(y); // clear the canvas in the current row
 
   var tempGameState = [...gameState];
 
@@ -129,6 +159,9 @@ function clearRow(y) {
   gameState = [...tempGameState];
 }
 
+/**
+ * * Determine if a row should be cleared (block in all row positions).
+ */
 function checkForRowClear() {
   for (let y = 0; y < gameState.length; y++) {
     if (
@@ -141,6 +174,10 @@ function checkForRowClear() {
   }
 }
 
+/**
+ * * Helper function to update the game state array after each block reaches it's endpoint.
+ * * Leaves a block in the canvas and draws a new one.
+ */
 function updateGameState() {
   let shape = currentShape.getCurrentShapeMatrix();
 
@@ -180,7 +217,12 @@ function handleGravity() {
   );
 
   if (shapeHasVerticalCollision) {
-    updateGameState();
+    if (currentShape.yPos === 0) {
+      gameOver();
+    }
+    else {
+      updateGameState();
+    }
   }
 }
 

@@ -2,13 +2,10 @@ import GameCanvas from './components/GameCanvas/GameCanvas';
 import createTetromino from './components/GameBlock/BlockFactory';
 import KeyHandler from './components/GameInput/KeyHandler';
 import { zeros, shuffle } from './utils/array';
+import { throttle } from 'lodash';
 
 // * Root scoped animation variables
-const movementSpeed = 0.06;
-const rotationSpeed = 0.08;
 var gravity;
-var movementTimestamp;
-var rotationTimestamp;
 var gravityTimestamp;
 
 // * Root scoped game variables
@@ -35,9 +32,7 @@ var shapeIndex; // indexes the shapeList
  */
 export function init(container) {
   // * Initialize variables
-  gravity = 0.5
-  movementTimestamp = 0;
-  rotationTimestamp = 0;
+  gravity = 0.5;
   gravityTimestamp = 0;
   rowsCleared = 0;
   gameStopped = false;
@@ -79,19 +74,10 @@ export function start() {
 export function run(timestamp) {
   if (!gameStopped) {
     // * Calculate the number of seconds passed since the last frame
-    let secondsSinceMovement = (timestamp - movementTimestamp) / 1000;
-    let secondsSinceRotation = (timestamp - rotationTimestamp) / 1000;
     let secondsSinceGravity = (timestamp - gravityTimestamp) / 1000;
 
-    if (secondsSinceMovement > movementSpeed) {
-      movementTimestamp = timestamp;
-      handleMovement();
-    }
-
-    if (secondsSinceRotation > rotationSpeed) {
-      rotationTimestamp = timestamp;
-      handleRotation();
-    }
+    handleMovement();
+    handleRotation();
 
     if (secondsSinceGravity > gravity) {
       gravityTimestamp = timestamp;
@@ -219,8 +205,7 @@ function handleGravity() {
   if (shapeHasVerticalCollision) {
     if (currentShape.yPos === 0) {
       gameOver();
-    }
-    else {
+    } else {
       updateGameState();
     }
   }
@@ -229,22 +214,23 @@ function handleGravity() {
 /**
  * * Helper function to handle movement based inputs. (left and right)
  */
-function handleMovement() {
+var handleMovement = throttle(() => {
   if (keyHandler.isDown(keyHandler.SPACE)) swapBlocks();
   if (keyHandler.isDown(keyHandler.LEFT))
     currentShape.moveLeft(gameBoundary, gameState);
   if (keyHandler.isDown(keyHandler.DOWN)) handleGravity();
   if (keyHandler.isDown(keyHandler.RIGHT))
     currentShape.moveRight(gameBoundary, gameState);
-}
+}, 50);
 
 /**
  * * Helper function to handle rotation inputs.
  */
-function handleRotation() {
-  if (keyHandler.isDown(keyHandler.UP))
+var handleRotation = throttle(() => {
+  if (keyHandler.isDown(keyHandler.UP)) {
     currentShape.rotate(gameBoundary, gameState);
-}
+  }
+}, 50);
 
 /**
  * * Using our KeyHandler class add event listeners to the document.
@@ -254,6 +240,12 @@ function setKeyboardListeners() {
     keyHandler.onKeyUp(event);
   });
   document.addEventListener('keydown', (event) => {
-    keyHandler.onKeyDown(event);
+    if (event.keyCode === keyHandler.UP) {
+      if (!keyHandler.isDown(keyHandler.UP)) {
+        keyHandler.onKeyDown(event);
+      }
+    } else {
+      keyHandler.onKeyDown(event);
+    }
   });
 }

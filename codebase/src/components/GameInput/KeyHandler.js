@@ -17,6 +17,14 @@ export default class KeyHandler {
   }
 
   /**
+   * * Takes a key out of the pressed object, useful for keys you don't want to be held down.
+   * @param {number} keyCode | Number corresponding to a key
+   */
+  unpressKey(keyCode) {
+    delete this.pressed[keyCode];
+  }
+
+  /**
    * * Adds a keycode to the pressed object.
    * @param {*} event | Callback event
    */

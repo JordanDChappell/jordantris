@@ -12,7 +12,7 @@ import JBlock from './JBlock';
  * @param {object} context | HTML canvas context to draw the shapes on
  * @param {number} size | Size in pixels of each square block that makes up a shape
  */
-export default function createBlock(shape, context, size) {
+export default function CreateBlock(shape, context, size) {
   switch (shape) {
     case 'Z': {
       return new ZBlock(context, size);
@@ -33,7 +33,7 @@ export default function createBlock(shape, context, size) {
       return new JBlock(context, size);
     }
     case 'O': {
-      return new OBlock(context, size)
+      return new OBlock(context, size);
     }
     default: {
       return null;

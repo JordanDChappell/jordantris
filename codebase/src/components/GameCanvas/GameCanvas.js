@@ -26,7 +26,6 @@ export default class GameCanvas {
     var canvas = document.createElement('canvas');
     canvas.setAttribute('id', `${this.id}-background`);
     canvas.setAttribute('class', styles['canvas']);
-    canvas.setAttribute('style', `left: calc(50% - ${width / 2}px)`);
 
     // * Set initial values
     canvas.height = height;
@@ -72,7 +71,6 @@ export default class GameCanvas {
     var canvas = document.createElement('canvas');
     canvas.setAttribute('id', `${this.id}-foreground`);
     canvas.setAttribute('class', styles['canvas']);
-    canvas.setAttribute('style', `left: calc(50% - ${width / 2}px)`);
 
     canvas.height = height;
     canvas.width = width;

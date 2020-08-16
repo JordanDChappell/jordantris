@@ -4,12 +4,24 @@ body {
 }
 
 /* Global Classes */
-.small-image {
+.flexbox {
+  display: flex;
+}
+.flexbox.center {
+  align-items: center;
+}
+.flexbox.row {
+  flex-direction: row;
+}
+.flexbox.col {
+  flex-direction: column;
+}
+
+/* Global components */
+img.small {
   height: 48px;
   width: 48px;
 }
-.game-container {
-  width: 100%;
-  margin: auto;
-  text-align: center;
+div.game-container {
+  margin-top: 2rem;
 }

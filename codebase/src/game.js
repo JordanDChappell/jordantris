@@ -1,17 +1,17 @@
 import GameCanvas from './components/GameCanvas/GameCanvas';
-import createTetromino from './components/GameBlock/BlockFactory';
+import CreateBlock from './components/GameBlock/BlockFactory';
 import KeyHandler from './components/GameInput/KeyHandler';
 import { zeros, shuffle } from './utils/array';
 import { throttle } from 'lodash';
 
 // * Root scoped animation variables
-const maxGravity = 0.05;
-const gravityFactor = 0.02;
-var gravity;
-var gravityTimestamp;
+const maxGravity = 0.05; // maximum 'force' of gravity, this is a time delta cap for gravity speed
+const gravityFactor = 0.02; // the delta of change in gravity after each row is cleared
+var gravity; // holds the current gravity time delta
+var gravityTimestamp; // keep track of the timestamp since gravity last manifested
 
 // * Root scoped game variables
-const blockSize = 30; // size of block in px
+const blockSize = 34; // size of block in px
 const gridWidth = 10; // width of grid in blocks
 const gridHeight = 20; // height of grid in blocks
 const gridPadding = 100; // padding on the left and right of the background in pixels
@@ -28,9 +28,9 @@ var gameBoundary = [
   gridWidth,
   gridHeight
 ];
-var gameState = [];
-var rowsCleared;
-var gameStopped;
+var gameState = []; // this becomes a matrix representing the game grid
+var rowsCleared; // keep track of user score
+var gameStopped; // flag which lets the game loop run
 
 // * Root scoped shape variables
 var currentShape; // holds the shape being controlled
@@ -68,7 +68,7 @@ export function start() {
   shuffle(shapeList);
 
   // * Set up our first shape
-  currentShape = createTetromino(
+  currentShape = CreateBlock(
     shapeList[shapeIndex],
     gameCanvas.foregroundLayer.getContext('2d'),
     blockSize
@@ -121,7 +121,7 @@ function generateNextBlock() {
     shapeIndex += 1;
   }
 
-  currentShape = createTetromino(
+  currentShape = CreateBlock(
     shapeList[shapeIndex],
     gameCanvas.foregroundLayer.getContext('2d'),
     blockSize

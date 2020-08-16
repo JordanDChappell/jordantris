@@ -194,6 +194,8 @@ export default class Block {
 
   /**
    * * Helper function to clear a block and select a new rotation in the shape matrix.
+   * @param {array} gameBoundary | Two block length numbers in an array, x and y axis max values
+   * @param {array} gameState | Multidimensional array of the current game state (1s where blocks are sitting)
    */
   rotate(gameBoundary, gameState) {
     this.clear(); // clear the shape before rotating, uses the current shape in the matrix to clear
@@ -231,6 +233,18 @@ export default class Block {
     }
 
     this.draw(); // draw the shape at the new position in the matrix
+  }
+
+  /**
+   * * Helper function to drop a piece until it hits a collision entity.
+   * @param {array} gameBoundary | Two block length numbers in an array, x and y axis max values
+   * @param {array} gameState | Multidimensional array of the current game state (1s where blocks are sitting)
+   */
+  drop(gameBoundary, gameState) {
+    var collision = false;
+    do {
+      collision = this.moveDown(gameBoundary, gameState);
+    } while (!collision);
   }
 
   // ############# Collision Functions #################### //

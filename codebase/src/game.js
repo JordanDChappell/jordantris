@@ -5,6 +5,8 @@ import { zeros, shuffle } from './utils/array';
 import { throttle } from 'lodash';
 
 // * Root scoped animation variables
+const maxGravity = 0.01;
+const gravityFactor = 0.015;
 var gravity;
 var gravityTimestamp;
 
@@ -76,9 +78,6 @@ export function run(timestamp) {
     // * Calculate the number of seconds passed since the last frame
     let secondsSinceGravity = (timestamp - gravityTimestamp) / 1000;
 
-    handleMovement();
-    handleRotation();
-
     if (secondsSinceGravity > gravity) {
       gravityTimestamp = timestamp;
       handleGravity();
@@ -125,9 +124,11 @@ function clearRow(y) {
   rowsCleared += 1; // increment the number of cleared rows
   gameCanvas.clearRow(y); // clear the canvas in the current row
 
-  var tempGameState = [...gameState];
+  // * Increase gravity
+  increaseGravity();
 
   // * Update the game state to push everything down 1 block
+  var tempGameState = [...gameState]; // temp state used when making changes
   for (let i = y; i > 0; i--) {
     // * Determine if the game state is empty here and on the next line (skipping)
     let blocksInCurrentRow = gameState[i].some((block) => {
@@ -211,17 +212,29 @@ function handleGravity() {
   }
 }
 
+function increaseGravity() {
+  if (gravity > maxGravity) {
+    gravity -= gravityFactor;
+  }
+}
+
 /**
  * * Helper function to handle movement based inputs. (left and right)
  */
 var handleMovement = throttle(() => {
-  if (keyHandler.isDown(keyHandler.SPACE)) swapBlocks();
-  if (keyHandler.isDown(keyHandler.LEFT))
+  if (keyHandler.isDown(keyHandler.SPACE)) {
+    swapBlocks();
+  }
+  if (keyHandler.isDown(keyHandler.LEFT)) {
     currentShape.moveLeft(gameBoundary, gameState);
-  if (keyHandler.isDown(keyHandler.DOWN)) handleGravity();
-  if (keyHandler.isDown(keyHandler.RIGHT))
+  }
+  if (keyHandler.isDown(keyHandler.DOWN)) {
+    currentShape.drop(gameBoundary, gameState);
+  }
+  if (keyHandler.isDown(keyHandler.RIGHT)) {
     currentShape.moveRight(gameBoundary, gameState);
-}, 50);
+  }
+}, 25);
 
 /**
  * * Helper function to handle rotation inputs.
@@ -243,9 +256,11 @@ function setKeyboardListeners() {
     if (event.keyCode === keyHandler.UP) {
       if (!keyHandler.isDown(keyHandler.UP)) {
         keyHandler.onKeyDown(event);
+        handleRotation();
       }
     } else {
       keyHandler.onKeyDown(event);
+      handleMovement();
     }
   });
 }

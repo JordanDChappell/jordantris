@@ -5,8 +5,8 @@ import { zeros, shuffle } from './utils/array';
 import { throttle } from 'lodash';
 
 // * Root scoped animation variables
-const maxGravity = 0.01;
-const gravityFactor = 0.015;
+const maxGravity = 0.05;
+const gravityFactor = 0.02;
 var gravity;
 var gravityTimestamp;
 
@@ -78,6 +78,10 @@ export function run(timestamp) {
     // * Calculate the number of seconds passed since the last frame
     let secondsSinceGravity = (timestamp - gravityTimestamp) / 1000;
 
+    // * Test for player inputs
+    handleMovement();
+
+    // * Handle gravity
     if (secondsSinceGravity > gravity) {
       gravityTimestamp = timestamp;
       handleGravity();
@@ -221,26 +225,25 @@ function increaseGravity() {
 /**
  * * Helper function to handle movement based inputs. (left and right)
  */
-var handleMovement = throttle(() => {
+const handleMovement = throttle(() => {
   if (keyHandler.isDown(keyHandler.SPACE)) {
     swapBlocks();
   }
   if (keyHandler.isDown(keyHandler.LEFT)) {
     currentShape.moveLeft(gameBoundary, gameState);
   }
-  if (keyHandler.isDown(keyHandler.DOWN)) {
+  if (
+    keyHandler.isDown(keyHandler.DOWN) &&
+    !keyHandler.isHeld(keyHandler.DOWN)
+  ) {
+    keyHandler.onKeyHold(keyHandler.DOWN);
     currentShape.drop(gameBoundary, gameState);
   }
   if (keyHandler.isDown(keyHandler.RIGHT)) {
     currentShape.moveRight(gameBoundary, gameState);
   }
-}, 25);
-
-/**
- * * Helper function to handle rotation inputs.
- */
-var handleRotation = throttle(() => {
-  if (keyHandler.isDown(keyHandler.UP)) {
+  if (keyHandler.isDown(keyHandler.UP) && !keyHandler.isHeld(keyHandler.UP)) {
+    keyHandler.onKeyHold(keyHandler.UP);
     currentShape.rotate(gameBoundary, gameState);
   }
 }, 50);
@@ -253,14 +256,6 @@ function setKeyboardListeners() {
     keyHandler.onKeyUp(event);
   });
   document.addEventListener('keydown', (event) => {
-    if (event.keyCode === keyHandler.UP) {
-      if (!keyHandler.isDown(keyHandler.UP)) {
-        keyHandler.onKeyDown(event);
-        handleRotation();
-      }
-    } else {
-      keyHandler.onKeyDown(event);
-      handleMovement();
-    }
+    keyHandler.onKeyDown(event);
   });
 }

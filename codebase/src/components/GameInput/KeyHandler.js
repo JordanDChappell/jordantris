@@ -1,6 +1,7 @@
 export default class KeyHandler {
   constructor() {
     this.pressed = {};
+    this.held = {};
     this.SPACE = 32;
     this.LEFT = 37;
     this.UP = 38;
@@ -16,12 +17,8 @@ export default class KeyHandler {
     return this.pressed[keyCode];
   }
 
-  /**
-   * * Takes a key out of the pressed object, useful for keys you don't want to be held down.
-   * @param {number} keyCode | Number corresponding to a key
-   */
-  unpressKey(keyCode) {
-    delete this.pressed[keyCode];
+  isHeld(keyCode) {
+    return this.held[keyCode];
   }
 
   /**
@@ -38,5 +35,10 @@ export default class KeyHandler {
    */
   onKeyUp(event) {
     delete this.pressed[event.keyCode];
+    delete this.held[event.keyCode];
+  }
+
+  onKeyHold(keyCode) {
+    this.held[keyCode] = true;
   }
 }

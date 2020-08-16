@@ -11,13 +11,22 @@ var gravity;
 var gravityTimestamp;
 
 // * Root scoped game variables
-const blockSize = 24;
+const blockSize = 30; // size of block in px
+const gridWidth = 10; // width of grid in blocks
+const gridHeight = 20; // height of grid in blocks
+const gridPadding = 100; // padding on the left and right of the background in pixels
 var keyHandler = new KeyHandler();
-var gameCanvas = new GameCanvas('jordantris-canvas', blockSize); // create a game canvas object, with foreground / background
+var gameCanvas = new GameCanvas(
+  'jordantris-canvas',
+  blockSize,
+  gridWidth,
+  gridHeight,
+  gridPadding
+); // create a game canvas object, with foreground / background
 var gameBoundary = [
   // calculate the game boundary size in block rather than pixels
-  gameCanvas.foregroundLayer.width / blockSize,
-  gameCanvas.foregroundLayer.height / blockSize
+  gridWidth,
+  gridHeight
 ];
 var gameState = [];
 var rowsCleared;

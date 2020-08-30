@@ -2,7 +2,7 @@ import Block from './Block';
 
 export default class TBLock extends Block {
   constructor(context, blockSize) {
-    super(context, blockSize, '#FF971C');
+    super(context, blockSize, '#800080');
     this.shapeMatrix = [
       [
         [1, 1, 1],
@@ -26,6 +26,4 @@ export default class TBLock extends Block {
       ]
     ];
   }
-
-  
 }

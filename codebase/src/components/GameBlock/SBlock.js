@@ -2,7 +2,7 @@ import Block from './Block';
 
 export default class ZBlock extends Block {
   constructor(context, blockSize) {
-    super(context, blockSize, '#FF3213');
+    super(context, blockSize, '#008000');
     this.shapeMatrix = [
       [
         [0, 1, 1],

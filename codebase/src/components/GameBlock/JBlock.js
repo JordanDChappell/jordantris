@@ -2,7 +2,7 @@ import Block from './Block';
 
 export default class JBlock extends Block {
   constructor(context, blockSize) {
-    super(context, blockSize, '#FFD500');
+    super(context, blockSize, '#0000FF');
     this.shapeMatrix = [
       [
         [0, 1, 0],

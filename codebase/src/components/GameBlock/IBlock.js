@@ -6,7 +6,7 @@ import Image4 from '../../images/i_block/block_4.gif';
 
 export default class IBlock extends Block {
   constructor(context, blockSize) {
-    super(context, blockSize, '#37FDFC');
+    super(context, blockSize, '#00FFFF');
 
     // Create images to display in each block of the shape
     var image1 = document.createElement('img');

@@ -50,7 +50,7 @@ export default class Block {
 
   drawImageBlock(x, y, rotation, image) {
     if (y > 0) {
-      // draw the blocks outline
+      // draw the block's outline
       this.context.fillStyle = this.color;
       this.context.strokeRect(x, y, this.blockSize, this.blockSize);
 
@@ -59,9 +59,13 @@ export default class Block {
       this.context.translate(x, y);
 
       if (rotation > 0) {
+        // calculate block offset based on rotation angle
+        const xOffset = rotation > 90 ? -this.blockSize : 0;
+        const yOffset = rotation > 180 ? 0 : -this.blockSize;
+
         // rotate the canvas and translate origin to account for rotation
         this.context.rotate((rotation * Math.PI) / 180);
-        this.context.translate(0, -this.blockSize);
+        this.context.translate(xOffset, yOffset);
       }
 
       // draw the image on the new canvas origin

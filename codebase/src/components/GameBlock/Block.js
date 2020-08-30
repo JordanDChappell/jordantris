@@ -20,6 +20,13 @@ export default class Block {
     return this.shapeMatrix[this.rotationIndex];
   }
 
+  /**
+   * * Uses the rotation index to determine angle in degrees to rotate images.
+   */
+  getCurrentImageRotation() {
+    return this.rotationIndex * 90;
+  }
+
   // ################ Drawing functions ################ //
 
   /**
@@ -37,7 +44,37 @@ export default class Block {
         y + 1,
         this.blockSize - 2,
         this.blockSize - 2
-      ); // draw the blocks color, slightly smaller than the outline
+      ); // draw the block's color, slightly smaller than the outline
+    }
+  }
+
+  drawImageBlock(x, y, rotation, image) {
+    if (y > 0) {
+      // draw the blocks outline
+      this.context.fillStyle = this.color;
+      this.context.strokeRect(x, y, this.blockSize, this.blockSize);
+
+      // save the canvas context so that we can restore translations
+      this.context.save();
+      this.context.translate(x, y);
+
+      if (rotation > 0) {
+        // rotate the canvas and translate origin to account for rotation
+        this.context.rotate((rotation * Math.PI) / 180);
+        this.context.translate(0, -this.blockSize);
+      }
+
+      // draw the image on the new canvas origin
+      this.context.drawImage(
+        image,
+        1,
+        1,
+        this.blockSize - 2,
+        this.blockSize - 2
+      );
+
+      // restore the canvas context
+      this.context.restore();
     }
   }
 
@@ -61,6 +98,7 @@ export default class Block {
    */
   draw() {
     var shape = this.getCurrentShapeMatrix(); // takes the current rotation of our shape
+    var rotation = this.getCurrentImageRotation(); // rotation of image in degrees
 
     // * Loop over the x and y axis in the shape matrix, drawing a block in a position marked with a 1
     for (let y = 0; y < shape.length; y++) {
@@ -68,9 +106,11 @@ export default class Block {
       for (let x = 0; x < row.length; x++) {
         if (row[x]) {
           // only draw blocks where a 1 is set
-          this.drawBlock(
+          this.drawImageBlock(
             this.xPos * this.blockSize + x * this.blockSize,
-            this.yPos * this.blockSize + y * this.blockSize
+            this.yPos * this.blockSize + y * this.blockSize,
+            rotation,
+            row[x]
           );
         }
       }

@@ -1,3 +1,5 @@
+import { drawBox, drawImage } from '../../utils/drawing';
+import { isObject } from '../../utils/utils';
 import styles from './GameCanvas.module.css';
 
 export default class GameCanvas {
@@ -116,9 +118,21 @@ export default class GameCanvas {
       if (row[i]) {
         let x = i * this.blockSize;
         let y = yPos * this.blockSize;
-        context.fillStyle = row[i];
-        context.strokeRect(x, y, this.blockSize, this.blockSize); // draw the blocks outline
-        context.fillRect(x + 1, y + 1, this.blockSize - 2, this.blockSize - 2); // draw the blocks color, slightly smaller than the outline
+
+        if (isObject(row[i]) && 'image' in row[i]) {
+          drawBox(context, x, y, this.blockSize, this.blockSize);
+          drawImage(
+            context,
+            row[i].image,
+            x,
+            y,
+            this.blockSize,
+            this.blockSize,
+            row[i].rotation
+          );
+        } else {
+          drawBox(context, x, y, this.blockSize, this.blockSize, row[i]);
+        }
       }
     }
   }

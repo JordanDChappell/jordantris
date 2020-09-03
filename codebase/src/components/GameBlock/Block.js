@@ -1,3 +1,5 @@
+import { drawBox, drawImage } from '../../utils/drawing';
+
 export default class Block {
   constructor(context, blockSize, color) {
     this.context = context; // canvas context for drawing onto
@@ -37,48 +39,14 @@ export default class Block {
    */
   drawBlock(x, y) {
     if (y > 0) {
-      this.context.fillStyle = this.color;
-      this.context.strokeRect(x, y, this.blockSize, this.blockSize); // draw the blocks outline
-      this.context.fillRect(
-        x + 1,
-        y + 1,
-        this.blockSize - 2,
-        this.blockSize - 2
-      ); // draw the block's color, slightly smaller than the outline
+      drawBox(this.context, x, y, this.blockSize, this.blockSize, this.color);
     }
   }
 
   drawImageBlock(x, y, rotation, image) {
     if (y > 0) {
-      // draw the block's outline
-      this.context.fillStyle = this.color;
-      this.context.strokeRect(x, y, this.blockSize, this.blockSize);
-
-      // save the canvas context so that we can restore translations
-      this.context.save();
-      this.context.translate(x, y);
-
-      if (rotation > 0) {
-        // calculate block offset based on rotation angle
-        const xOffset = rotation > 90 ? -this.blockSize : 0;
-        const yOffset = rotation > 180 ? 0 : -this.blockSize;
-
-        // rotate the canvas and translate origin to account for rotation
-        this.context.rotate((rotation * Math.PI) / 180);
-        this.context.translate(xOffset, yOffset);
-      }
-
-      // draw the image on the new canvas origin
-      this.context.drawImage(
-        image,
-        1,
-        1,
-        this.blockSize - 2,
-        this.blockSize - 2
-      );
-
-      // restore the canvas context
-      this.context.restore();
+      drawBox(this.context, x, y, this.blockSize, this.blockSize);
+      drawImage(this.context, image, x, y, this.blockSize, this.blockSize, rotation);
     }
   }
 

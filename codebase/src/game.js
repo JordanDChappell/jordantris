@@ -34,8 +34,7 @@ var gameStopped; // flag which lets the game loop run
 
 // * Root scoped shape variables
 var currentShape; // holds the shape being controlled
-// var shapeList = ['L', 'I', 'S', 'Z', 'T', 'J', 'O']; // a list of all shape characters for creating blocks
-var shapeList = ['L', 'I', 'J', 'O'];
+var shapeList = ['L', 'I', 'S', 'Z', 'T', 'J', 'O']; // a list of all shape characters for creating blocks
 var shapeIndex; // indexes the shapeList
 
 /**

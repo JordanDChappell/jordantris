@@ -188,8 +188,14 @@ function updateGameState() {
       x < shape[0].length + currentShape.xPos;
       x++
     ) {
-      if (shape[y - currentShape.yPos][x - currentShape.xPos]) {
-        gameState[y][x] = currentShape.color;
+      const block = shape[y - currentShape.yPos][x - currentShape.xPos];
+      if (block) {
+        // gameState[y][x] = currentShape.color;
+        // * Keep track of an object containing the block image and rotation
+        gameState[y][x] = {
+          image: block,
+          angle: currentShape.getCurrentImageRotation()
+        };
       }
     }
   }

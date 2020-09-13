@@ -1,3 +1,5 @@
+import { drawBox, drawImage } from '../../utils/drawing';
+
 export default class Block {
   constructor(context, blockSize, color) {
     this.context = context; // canvas context for drawing onto
@@ -20,6 +22,13 @@ export default class Block {
     return this.shapeMatrix[this.rotationIndex];
   }
 
+  /**
+   * * Uses the rotation index to determine angle in degrees to rotate images.
+   */
+  getCurrentImageRotation() {
+    return this.rotationIndex * 90;
+  }
+
   // ################ Drawing functions ################ //
 
   /**
@@ -30,14 +39,14 @@ export default class Block {
    */
   drawBlock(x, y) {
     if (y > 0) {
-      this.context.fillStyle = this.color;
-      this.context.strokeRect(x, y, this.blockSize, this.blockSize); // draw the blocks outline
-      this.context.fillRect(
-        x + 1,
-        y + 1,
-        this.blockSize - 2,
-        this.blockSize - 2
-      ); // draw the blocks color, slightly smaller than the outline
+      drawBox(this.context, x, y, this.blockSize, this.blockSize, this.color);
+    }
+  }
+
+  drawImageBlock(x, y, rotation, image) {
+    if (y > 0) {
+      drawBox(this.context, x, y, this.blockSize, this.blockSize);
+      drawImage(this.context, image, x, y, this.blockSize, this.blockSize, rotation);
     }
   }
 
@@ -61,6 +70,7 @@ export default class Block {
    */
   draw() {
     var shape = this.getCurrentShapeMatrix(); // takes the current rotation of our shape
+    var rotation = this.getCurrentImageRotation(); // rotation of image in degrees
 
     // * Loop over the x and y axis in the shape matrix, drawing a block in a position marked with a 1
     for (let y = 0; y < shape.length; y++) {
@@ -68,9 +78,11 @@ export default class Block {
       for (let x = 0; x < row.length; x++) {
         if (row[x]) {
           // only draw blocks where a 1 is set
-          this.drawBlock(
+          this.drawImageBlock(
             this.xPos * this.blockSize + x * this.blockSize,
-            this.yPos * this.blockSize + y * this.blockSize
+            this.yPos * this.blockSize + y * this.blockSize,
+            rotation,
+            row[x]
           );
         }
       }

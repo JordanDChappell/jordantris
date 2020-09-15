@@ -128,7 +128,7 @@ export default class GameCanvas {
             y,
             this.blockSize,
             this.blockSize,
-            row[i].rotation
+            row[i].angle
           );
         } else {
           drawBox(context, x, y, this.blockSize, this.blockSize, row[i]);

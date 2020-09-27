@@ -2,7 +2,7 @@ name: Build and Deploy
 
 on:
   push:
-    branches: [ master ]
+    branches: [ master, pipelines ]
   pull_request:
     branches: [ master ]
 

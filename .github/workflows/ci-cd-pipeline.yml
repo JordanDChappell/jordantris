@@ -16,7 +16,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [10.x, 12.x, 14.x]
+        node-version: [12.x]
 
     steps:
     - uses: actions/checkout@v2
@@ -26,6 +26,8 @@ jobs:
         node-version: ${{ matrix.node-version }}
     - name: Install yarn package manager
       run: npm install -g yarn 
+    - name: Install project dependencies
+      run: yarn install
     - name: Build the application
       run: yarn build
     - name: List files

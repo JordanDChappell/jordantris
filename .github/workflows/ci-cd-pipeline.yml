@@ -30,6 +30,13 @@ jobs:
       run: yarn install
     - name: Build the application
       run: yarn build
-    - name: List files
-      run: ls
+    - name: SFTP Deploy
+      uses: wlixcc/SFTP-Deploy-Action@v1.0
+      with:
+        username: ${{ secrets.SFTP_USER }} 
+        server: ${{ secrets.SFTP_SERVER }} 
+        port: 22
+        ssh_private_key: ${{ secrets.SFTP_KEY }} 
+        local_path: ./dist/*
+        remote_path: /var/www/jordanchappell.com/source/jordantris
       

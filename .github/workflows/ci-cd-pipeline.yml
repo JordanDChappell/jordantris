@@ -1,8 +1,6 @@
 name: Build and Deploy
 
 on:
-  push:
-    branches: [ master, pipelines ]
   pull_request:
     branches: [ master ]
 
@@ -37,6 +35,6 @@ jobs:
         server: ${{ secrets.SFTP_SERVER }} 
         port: 22
         ssh_private_key: ${{ secrets.SFTP_KEY }} 
-        local_path: ./dist/*
+        local_path: ./codebase/dist/*
         remote_path: /var/www/jordanchappell.com/source/jordantris
       

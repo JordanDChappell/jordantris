@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - master
+      - pipelines
 
 jobs:
   build:
@@ -48,8 +49,6 @@ jobs:
         with:
           name: drop
           path: ./dist
-      - name: List files
-        run: ls
       - name: Install yarn package manager
         run: npm install -g yarn 
       - name: Install project dependencies

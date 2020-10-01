@@ -3,7 +3,10 @@ name: Build and Test
 on:
   pull_request:
     branches: 
-    - master
+      - master
+  push:
+    branches: 
+      - pipelines-1
   workflow_dispatch:
 
 jobs:

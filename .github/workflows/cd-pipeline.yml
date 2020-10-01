@@ -1,0 +1,64 @@
+name: Build and Deploy
+
+on:
+  workflow_run:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./codebase
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Node.js 12.x
+      uses: actions/setup-node@v1
+      with:
+        node-version: 12.x
+    - name: Install yarn package manager
+      run: npm install -g yarn 
+    - name: Install project dependencies
+      run: yarn install
+    - name: Build the application
+      run: yarn build
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v2.1.4
+      with:
+        name: drop
+        path: ./dist/*
+  
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Use Node.js 12.x
+        uses: actions/setup-node@v1
+        with:
+          node-version: 12.x
+      - name: Download a Build Artifact
+        uses: actions/download-artifact@v2.0.5
+        with:
+          name: drop
+          path: ./dist
+      - name: List files
+        run: ls
+      - name: Install yarn package manager
+        run: npm install -g yarn 
+      - name: Install project dependencies
+        run: yarn install
+      - name: Build the application
+        run: yarn build
+      - name: SFTP Deploy
+        uses: wlixcc/SFTP-Deploy-Action@v1.0
+        with:
+          username: ${{ secrets.SFTP_USER }} 
+          server: ${{ secrets.SFTP_SERVER }} 
+          port: 22
+          ssh_private_key: ${{ secrets.SFTP_KEY }} 
+          local_path: ./dist/*
+          remote_path: /var/www/jordanchappell.com/source/jordantris

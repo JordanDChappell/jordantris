@@ -1,0 +1,54 @@
+name: Build and Test
+
+on:
+  pull_request:
+    branches: 
+      - master
+  push:
+    branches: 
+      - pipelines-1
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./codebase
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js 12.x
+        uses: actions/setup-node@v1
+        with:
+          node-version: 12.x
+      - name: Install yarn package manager
+        run: npm install -g yarn 
+      - name: Install project dependencies
+        run: yarn install
+      - name: Build the application
+        run: yarn build
+      
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./codebase
+    needs: [build]
+    
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js 12.x
+        uses: actions/setup-node@v1
+        with:
+          node-version: 12.x
+      - name: Install yarn package manager
+        run: npm install -g yarn 
+      - name: Install project dependencies
+        run: yarn install
+      - name: Test the application
+        run: yarn test
+    
+      

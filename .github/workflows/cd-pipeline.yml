@@ -31,7 +31,7 @@ jobs:
       uses: actions/upload-artifact@v2.1.4
       with:
         name: drop
-        path: ./dist/*
+        path: ./codebase/dist/*
   
   deploy:
     name: Deploy
@@ -42,21 +42,11 @@ jobs:
         working-directory: ./dist
         
     steps:
-      - name: Use Node.js 12.x
-        uses: actions/setup-node@v1
-        with:
-          node-version: 12.x
       - name: Download a Build Artifact
         uses: actions/download-artifact@v2.0.5
         with:
           name: drop
           path: ./dist
-      - name: Install yarn package manager
-        run: npm install -g yarn 
-      - name: Install project dependencies
-        run: yarn install
-      - name: Build the application
-        run: yarn build
       - name: SFTP Deploy
         uses: wlixcc/SFTP-Deploy-Action@v1.0
         with:

@@ -38,17 +38,10 @@ var shapeList = ['L', 'I', 'S', 'Z', 'T', 'J', 'O']; // a list of all shape char
 var shapeIndex; // indexes the shapeList
 
 /**
- * * Sets up the game canvas and initializes a shape, starts the animation.
+ * * Sets up the game canvas and initializes a shape.
  * @param {HTMLElement} container | Container element to append canvas to
  */
 export function init(container) {
-  // * Initialize variables
-  gravity = 0.5;
-  gravityTimestamp = 0;
-  rowsCleared = 0;
-  gameStopped = false;
-  shapeIndex = 0;
-
   // * Initialize game objects
   container.appendChild(gameCanvas.backgroundLayer);
   container.appendChild(gameCanvas.foregroundLayer);
@@ -56,6 +49,13 @@ export function init(container) {
 }
 
 export function start() {
+  // * Initialize variables
+  gravity = 0.5;
+  gravityTimestamp = 0;
+  rowsCleared = 0;
+  gameStopped = false;
+  shapeIndex = 0;
+
   // * Set up the game state array
   for (let y = 0; y < gameBoundary[1]; y++) {
     gameState[y] = [];

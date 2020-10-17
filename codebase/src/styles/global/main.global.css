@@ -1,4 +1,7 @@
 /* Global Elements */
+html {
+  height: 95%;
+}
 body {
   height: 100%;
 }
@@ -16,6 +19,9 @@ body {
 .flexbox.col {
   flex-direction: column;
 }
+.hidden {
+  display: none !important;
+}
 
 /* Global components */
 img.small {
@@ -23,5 +29,6 @@ img.small {
   width: 48px;
 }
 div.game-container {
-  margin-top: 2rem;
+  height: 100%;
+  justify-content: center;
 }

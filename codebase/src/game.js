@@ -101,12 +101,13 @@ export function run(timestamp) {
 }
 
 /**
- * * Function to end the game after a loss.
+ * * Function to end the game after a loss. Allow the user to start again.
  */
 function gameOver() {
   gameStopped = true;
   alert(`You managed to clear ${rowsCleared} rows!`);
   gameCanvas.clearForegroundLayer();
+  document.getElementById('start-button').classList.remove('hidden');
 }
 
 /**

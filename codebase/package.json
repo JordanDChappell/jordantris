@@ -1,6 +1,6 @@
 {
   "name": "games-jordantris",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "A HTML5 tetris game used to learn webpack and ES6 project creation.",
   "scripts": {
     "test": "jest --verbose",

@@ -11,7 +11,7 @@ export function zeros(length) {
 }
 
 /**
- * * Shuffle all indices of an array, taken from ''
+ * * Shuffle random indices of an array, taken from.
  * @param {array} array | Array to shuffle
  */
 export function shuffle(array) {
@@ -20,5 +20,5 @@ export function shuffle(array) {
     var temp = array[i];
     array[i] = array[j];
     array[j] = temp;
-  } 
+  }
 }

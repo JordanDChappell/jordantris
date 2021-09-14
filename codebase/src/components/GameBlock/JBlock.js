@@ -1,8 +1,4 @@
 import Block from './Block';
-import Image1 from '../../images/j_block/block_1.gif';
-import Image2 from '../../images/j_block/block_2.gif';
-import Image3 from '../../images/j_block/block_3.gif';
-import Image4 from '../../images/j_block/block_4.gif';
 
 export default class JBlock extends Block {
   constructor(context, blockSize) {
@@ -10,13 +6,17 @@ export default class JBlock extends Block {
 
     // Create images to display in each block of the shape
     var image1 = document.createElement('img');
-    image1.src = Image1;
+    image1.src =
+      'https://images.jordanchappell.com/projects/jordantris/j_block/block_1.gif';
     var image2 = document.createElement('img');
-    image2.src = Image2;
+    image2.src =
+      'https://images.jordanchappell.com/projects/jordantris/j_block/block_2.gif';
     var image3 = document.createElement('img');
-    image3.src = Image3;
+    image3.src =
+      'https://images.jordanchappell.com/projects/jordantris/j_block/block_3.gif';
     var image4 = document.createElement('img');
-    image4.src = Image4;
+    image4.src =
+      'https://images.jordanchappell.com/projects/jordantris/j_block/block_4.gif';
 
     this.shapeMatrix = [
       [

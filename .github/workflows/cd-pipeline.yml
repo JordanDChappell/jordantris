@@ -38,17 +38,18 @@ jobs:
     runs-on: ubuntu-latest
         
     steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          ref: gh-pages
       - name: Download a Build Artifact
         uses: actions/download-artifact@v2.0.5
         with:
           name: drop
           path: ./dist
-      - name: SFTP Deploy
-        uses: wlixcc/SFTP-Deploy-Action@v1.0
+      - name: Deploy to GitHub pages
+        uses: JamesIves/github-pages-deploy-action@v4.3.3
         with:
-          username: ${{ secrets.SFTP_USER }} 
-          server: ${{ secrets.SFTP_SERVER }} 
-          port: 22
-          ssh_private_key: ${{ secrets.SFTP_KEY }} 
-          local_path: ./dist/*
-          remote_path: /var/www/jordanchappell.com/source/jordantris
+          branch: gh-pages
+          folder: dist
+          ssh-key: ${{ secrets.DEPLOY_KEY }}

@@ -119,6 +119,8 @@ export default class GameCanvas {
         let x = i * this.blockSize;
         let y = yPos * this.blockSize;
 
+        console.log(row[i]);
+
         if (isObject(row[i]) && 'image' in row[i]) {
           drawBox(context, x, y, this.blockSize, this.blockSize);
           drawImage(

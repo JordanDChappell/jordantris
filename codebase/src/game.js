@@ -194,7 +194,7 @@ function updateGameState() {
         // gameState[y][x] = currentShape.color;
         // * Keep track of an object containing the block image and rotation
         gameState[y][x] = {
-          image: block,
+          // image: block,
           angle: currentShape.getCurrentImageRotation()
         };
       }

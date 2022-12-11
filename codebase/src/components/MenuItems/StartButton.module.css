@@ -4,16 +4,7 @@
   color: black;
   font-weight: 700;
   font-size: 1em;
-  background-image: linear-gradient(
-    to bottom,
-    #00ffff,
-    #0000ff,
-    #008000,
-    #ffff00,
-    #ffa500,
-    #ff0000,
-    #800080
-  );
+  background-color: white;
   border-radius: 10px;
   border: 1px solid black;
   position: relative;

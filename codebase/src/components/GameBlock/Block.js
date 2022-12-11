@@ -78,7 +78,7 @@ export default class Block {
       for (let x = 0; x < row.length; x++) {
         if (row[x]) {
           // only draw blocks where a 1 is set
-          this.drawImageBlock(
+          this.drawBlock(
             this.xPos * this.blockSize + x * this.blockSize,
             this.yPos * this.blockSize + y * this.blockSize,
             rotation,

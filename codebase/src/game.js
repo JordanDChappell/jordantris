@@ -1,8 +1,15 @@
+import { throttle } from 'lodash';
+import { zeros, shuffle } from './utils/array';
+
 import GameCanvas from './components/GameCanvas/GameCanvas';
 import CreateBlock from './components/GameBlock/BlockFactory';
 import KeyHandler from './components/GameInput/KeyHandler';
-import { zeros, shuffle } from './utils/array';
-import { throttle } from 'lodash';
+import IBlock from './components/GameBlock/IBlock';
+import JBlock from './components/GameBlock/JBlock';
+import LBlock from './components/GameBlock/LBlock';
+import OBlock from './components/GameBlock/OBlock';
+import SBlock from './components/GameBlock/SBlock';
+import ZBlock from './components/GameBlock/ZBLock';
 
 // * Root scoped animation variables
 const maxGravity = 0.05; // maximum 'force' of gravity, this is a time delta cap for gravity speed
@@ -46,6 +53,16 @@ export function init(container) {
   container.appendChild(gameCanvas.backgroundLayer);
   container.appendChild(gameCanvas.foregroundLayer);
   setKeyboardListeners();
+
+  // * Pre-load blocks
+  IBlock.preLoadImages();
+  JBlock.preLoadImages();
+  LBlock.preLoadImages();
+  OBlock.preLoadImages();
+  SBlock.preLoadImages();
+  IBlock.preLoadImages();
+  IBlock.preLoadImages();
+  ZBlock.preLoadImages();
 }
 
 export function start() {
@@ -191,10 +208,9 @@ function updateGameState() {
     ) {
       const block = shape[y - currentShape.yPos][x - currentShape.xPos];
       if (block) {
-        // gameState[y][x] = currentShape.color;
         // * Keep track of an object containing the block image and rotation
         gameState[y][x] = {
-          // image: block,
+          image: block,
           angle: currentShape.getCurrentImageRotation()
         };
       }

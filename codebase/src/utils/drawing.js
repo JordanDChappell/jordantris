@@ -48,7 +48,7 @@ export const drawImage = (
  * @param {string} fill | optional fill colour, will fill in the box
  */
 export const drawBox = (context, x, y, width, height, fill = null) => {
-  context.strokeRect(x, y, width, height); // draw the box outline
+  context.strokeRect(x + 1, y + 1, width - 2, height - 2); // draw the box outline
 
   if (fill) {
     context.fillStyle = fill;

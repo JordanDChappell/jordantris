@@ -45,7 +45,7 @@ export default class Block {
 
   drawImageBlock(x, y, rotation, image) {
     if (y > 0) {
-      drawBox(this.context, x, y, this.blockSize, this.blockSize);
+      drawBox(this.context, x, y, this.blockSize, this.blockSize, this.color);
       drawImage(this.context, image, x, y, this.blockSize, this.blockSize, rotation);
     }
   }
@@ -56,12 +56,11 @@ export default class Block {
    * @param {number} y | y-axis local coordinate to clear a block from
    */
   clearBlock(x, y) {
-    // * Clear a slightly larger area (1 pixel in all directions) around a block.
     this.context.clearRect(
-      x - 1,
-      y - 1,
-      this.blockSize + 2,
-      this.blockSize + 2
+      x,
+      y,
+      this.blockSize,
+      this.blockSize
     );
   }
 
@@ -78,7 +77,7 @@ export default class Block {
       for (let x = 0; x < row.length; x++) {
         if (row[x]) {
           // only draw blocks where a 1 is set
-          this.drawBlock(
+          this.drawImageBlock(
             this.xPos * this.blockSize + x * this.blockSize,
             this.yPos * this.blockSize + y * this.blockSize,
             rotation,
@@ -155,7 +154,7 @@ export default class Block {
    * @param {array} gameState | Multidimensional array of the current game state (1s where blocks are sitting)
    */
   moveRight(gameBoundary, gameState) {
-    let xpos = this.xPos + 1; // left in the x-axis is a positive direction
+    let xpos = this.xPos + 1; // right in the x-axis is a positive direction
     let ypos = this.yPos; // no movement in the y-axis
 
     // * Try to detect collisions, first with the boundary of the game canvas
@@ -359,5 +358,22 @@ export default class Block {
     }
 
     return false;
+  }
+
+  static preLoadImages(id, images) {
+    images.forEach((image, index) => {
+      const linkId = `${id}-${index}`;
+
+      if (document.getElementById(linkId)) 
+        return;
+
+      const link = document.createElement('link');
+      link.setAttribute('id', linkId);
+      link.setAttribute('rel', 'preload');
+      link.setAttribute('as', 'image');
+      link.setAttribute('href', image);
+
+      document.head.appendChild(link);
+    });
   }
 }

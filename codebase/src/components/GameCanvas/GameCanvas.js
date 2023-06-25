@@ -100,10 +100,10 @@ export default class GameCanvas {
   clearRow(yPos) {
     let context = this.foregroundLayer.getContext('2d');
     context.clearRect(
-      0 - 1,
-      yPos * this.blockSize - 1,
-      this.foregroundLayer.width + 2,
-      this.blockSize + 2
+      0,
+      yPos * this.blockSize,
+      this.foregroundLayer.width,
+      this.blockSize
     );
   }
 
@@ -118,8 +118,6 @@ export default class GameCanvas {
       if (row[i]) {
         let x = i * this.blockSize;
         let y = yPos * this.blockSize;
-
-        console.log(row[i]);
 
         if (isObject(row[i]) && 'image' in row[i]) {
           drawBox(context, x, y, this.blockSize, this.blockSize);
